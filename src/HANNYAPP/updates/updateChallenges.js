@@ -1,6 +1,6 @@
 import React from 'react'
 import {useMutation } from '@apollo/client';
-import {UPDATE_CHALLENGES_APP_DATA} from "../../components/graphql/mutations";
+import {UPDATE_CHALLENGES_APP_DATA} from "../../graphql/mutations";
 
 
 function UpdateChallengeData({data}) {
