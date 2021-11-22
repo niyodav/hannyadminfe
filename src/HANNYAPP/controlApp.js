@@ -1,145 +1,121 @@
-import React from 'react'
-import { useState , useContext,useEffect} from "react";
-import { useQuery, ApolloConsumer } from '@apollo/client';
-import {ALL_CHALLENGES} from "../components/graphql/queries";
-import { Table, Button } from '@material-ui/core';
-import {useParams} from "react-router-dom";
+import React from "react";
+import { useState, useContext, useEffect } from "react";
+import { useQuery, ApolloConsumer } from "@apollo/client";
+import { ALL_CHALLENGES } from "../graphql/queries";
+import { Table, Button } from "@material-ui/core";
+import { useParams } from "react-router-dom";
 
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from "@apollo/client";
 
-import { Tabs,Tab } from "@material-ui/core";
+import { Tabs, Tab } from "@material-ui/core";
 
-import { makeStyles } from "@material-ui/core/styles"
-import InputText from './inputext';
-import UploadImage from './uploadImage';
-import UpdateChallengeData from './updates/updateChallenges';
-import DisplayAHnnyAppTable from './displayTable';
-import PointDistribution from './pointSystem/pointDistribution';
-import PointToCash from './pointSystem/pointsToCash';
-import PointsMaximum from './pointSystem/pointsMaximum';
-import PointSystem from './pointSystem/main';
-import ChallengeControl from './challenges/challenge';
-
+import { makeStyles } from "@material-ui/core/styles";
+import InputText from "./inputext";
+import UploadImage from "./uploadImage";
+import UpdateChallengeData from "./updates/updateChallenges";
+import DisplayAHnnyAppTable from "./displayTable";
+import PointDistribution from "./pointSystem/pointDistribution";
+import PointToCash from "./pointSystem/pointsToCash";
+import PointsMaximum from "./pointSystem/pointsMaximum";
+import PointSystem from "./pointSystem/main";
+import ChallengeControl from "./challenges/challenge";
 
 const useStyles = makeStyles((theme) => ({
-    upperLinks:{
-        textDecoration: 'none',
-        color :"black",
-        fontSize:20,
-        fontFamily:"Nanum Square Regular",
-      "&:hover": {
-        color: "#ff8000"
-        }
-    },
-    extend: {
-        marginLeft: 50,
-        // background: 'red'
-    },
-    root: {
-        flexGrow: 1,
-        backgroundColor: theme.palette.background.paper,
-        display: 'flex',
-        // height: 400,
-        marginLeft: 20
-      },
-      tabs: {
-        borderRight: `1px solid ${theme.palette.divider}`,
-      },
-      field: {
-          marginTop: 30
-      }
-    
-  }))
+	upperLinks: {
+		textDecoration: "none",
+		color: "black",
+		fontSize: 20,
+		fontFamily: "Nanum Square Regular",
+		"&:hover": {
+			color: "#ff8000",
+		},
+	},
+	extend: {
+		marginLeft: 50,
+		// background: 'red'
+	},
+	root: {
+		flexGrow: 1,
+		backgroundColor: theme.palette.background.paper,
+		display: "flex",
+		// height: 400,
+		marginLeft: 20,
+	},
+	tabs: {
+		borderRight: `1px solid ${theme.palette.divider}`,
+	},
+	field: {
+		marginTop: 30,
+	},
+}));
 
-  
-  
-function ControlApp({search,addModify}) {
+function ControlApp({ search, addModify }) {
+	const [tabValue, setTabValue] = useState("challenges");
 
-    const [tabValue, setTabValue] = useState('challenges');
+	const classes = useStyles();
 
+	const { fk } = useParams();
 
-    const classes  = useStyles()
+	const [item, setItem] = useState(false);
 
-    const {fk}=useParams()
+	function addItem(item) {
+		setItem(item);
+	}
 
-    const [item,setItem] = useState(false);
+	const handleChange = (event, newValue) => {
+		setTabValue(newValue);
+	};
 
+	// useEffect(() => {
+	//     // console.log(item)
+	//     refetch()
+	//     return ()=>(
+	//         setItem(false)
+	//     )
 
+	// },[item]);
 
-    function addItem(item){
-        
-        setItem(item)
-    }
+	function fieldsToUpdate(node, item) {
+		if ([node] == [item]) {
+			return { item };
+		}
+	}
 
-    const handleChange = (event, newValue) => {
-        setTabValue(newValue);
+	const { loading, error, data, refetch } = useQuery(ALL_CHALLENGES);
 
-    };
+	console.log(item);
 
-    // useEffect(() => {
-    //     // console.log(item)
-    //     refetch()
-    //     return ()=>(
-    //         setItem(false)
-    //     )
+	if (loading) return <p>Loading...</p>;
+	if (error) return <p>there was an error</p>;
+	if (item) {
+		console.log({ [item.name]: item.content });
+	}
 
+	return (
+		<div className="wrapper">
+			<h1 style={{ marginLeft: 20, marginTop: 20 }}>
+				app control center{" "}
+			</h1>
 
-    // },[item]);
+			<Tabs
+				orientation="horizontal"
+				variant="scrollable"
+				value={tabValue}
+				onChange={handleChange}
+				label="challenge"
+				className={classes.tabs}
+				indicatorColor="primary"
+				textColor="primary"
+			>
+				<Tab label={"challenges"} value={"challenges"} />
+				<Tab label={"points"} value={"points"} />
+			</Tabs>
+			{tabValue === "challenges" && <ChallengeControl />}
+			{tabValue === "points" && <PointSystem />}
 
-    function fieldsToUpdate(node,item){
-
-        if([node]==[item]){
-            return {item}
-
-        }
-
-
-
-    }
-
-
-    const { loading, error, data,refetch } = useQuery(ALL_CHALLENGES);
-
-  console.log(item)
-
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>there was an error</p>;
-if(item){
-    
-    console.log({[item.name]: item.content})
-
-}
-
-     return (
-        <div className="wrapper">
-            <h1 style= {{marginLeft: 20, marginTop: 20}}>app control center </h1>
-           
-            <Tabs
-                    orientation="horizontal"
-                    variant="scrollable"
-                    value={tabValue}
-                    onChange={handleChange}
-                    label="challenge"
-                    className={classes.tabs}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    >      
-                    <Tab label={'challenges'} value={'challenges'}/>
-                    <Tab label={'points'} value={'points'}/>
-
-                </Tabs>
-                {
-                    tabValue==='challenges'&&
-                    <ChallengeControl/>
-                }
-                {
-                    tabValue==='points'&&
-                    <PointSystem/>
-                }
-
-                {/* <PointSystem/> */}
-            <div className={classes.root}>  
-                {/* <Tabs
+			{/* <PointSystem/> */}
+			<div className={classes.root}>
+				{/* <Tabs
                     orientation="vertical"
                     variant="scrollable"
                     value={tabValue}
@@ -157,7 +133,7 @@ if(item){
                     }
 
                 </Tabs> */}
-{/* 
+				{/* 
                 <div>
 
                     {
@@ -226,16 +202,9 @@ if(item){
                         ))
                     }
                 </div> */}
-            </div>
-            
- 
-        </div>
-        
-     )
-     
-     
+			</div>
+		</div>
+	);
 }
 
-
-
-export default  ControlApp
+export default ControlApp;
