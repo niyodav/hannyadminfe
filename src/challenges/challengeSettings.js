@@ -155,7 +155,6 @@ function ChallengeSettings() {
 	};
 	function submitBasics() {
 		if (data.challenges && data.challenges.edges) {
-			console.log();
 			updateChallengesBasicSetting({
 				variables: {
 					challengeId: challengeBasics.challengeId,
@@ -231,14 +230,12 @@ function ChallengeSettings() {
 			createAccessCode({
 				variables: accessCode,
 			});
-			console.log(accessCode);
 			// window.location.reload(true);
 		}
 	}
 
 	function addFile(item) {
 		handleSubmission(item);
-		console.log(item);
 	}
 
 	if (loading) return <p>Loading...</p>;
@@ -252,7 +249,7 @@ function ChallengeSettings() {
 					<div className={classes.basicSetting}>
 						<div className={classes.challengeName}>
 							<div className={classes.challengeNameTitle}>
-								썸네일 (square)
+								썸네일
 							</div>
 							<div>
 								<UploadMedia
@@ -265,7 +262,7 @@ function ChallengeSettings() {
 
 						<div className={classes.challengeName}>
 							<div className={classes.challengeNameTitle}>
-								썸네일 (rectangle)
+								챌린지 리스트 썸네일
 							</div>
 							<div>
 								<UploadMedia
@@ -311,7 +308,7 @@ function ChallengeSettings() {
 
 						<div className={classes.challengeName}>
 							<div className={classes.challengeNameTitle}>
-								#HASHTAGS
+								썸네일 설명
 							</div>
 							<div>
 								<TextField
@@ -345,8 +342,58 @@ function ChallengeSettings() {
 
 						<div className={classes.challengeName}>
 							<div className={classes.challengeNameTitle}>
-								show on screen{" "}
-								<input
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "row",
+									}}
+								>
+									<div style={{ marginRight: 20 }}>
+										show on screen{" "}
+									</div>
+
+									<div
+										style={{
+											width: 20,
+											height: 20,
+											background: "blue",
+											color: "white",
+											marginRight: 20,
+											cursor: "pointer",
+
+											padding: 3,
+										}}
+										onClick={(e) =>
+											setChallengeBasics({
+												...challengeBasics,
+												showOnScreen: true,
+											})
+										}
+									>
+										yes
+									</div>
+									<div
+										style={{
+											width: 20,
+											height: 20,
+											background: "blue",
+											color: "white",
+											cursor: "pointer",
+
+											padding: 3,
+										}}
+										onClick={(e) =>
+											setChallengeBasics({
+												...challengeBasics,
+												showOnScreen: false,
+											})
+										}
+									>
+										No
+									</div>
+									{console.log(challengeBasics.showOnScreen)}
+								</div>
+								{/* <input
 									type="checkbox"
 									defaultChecked={
 										challengeBasics.showOnScreen
@@ -363,7 +410,7 @@ function ChallengeSettings() {
 											showOnScreen: !challengeBasics.showOnScreen,
 										})
 									}
-								/>
+								/> */}
 							</div>
 
 							{/* <div>
@@ -439,17 +486,55 @@ function ChallengeSettings() {
 
 						<div className={classes.challengeName}>
 							<div className={classes.challengeNameTitle}>
-								start tomorrow
-								<input
-									type="checkbox"
-									defaultChecked={challengeBasics.nextDay}
-									onChange={(e) =>
-										setChallengeBasics({
-											...challengeBasics,
-											nextDay: !challengeBasics.nextDay,
-										})
-									}
-								/>
+								<div
+									style={{
+										display: "flex",
+										flexDirection: "row",
+									}}
+								>
+									<div style={{ marginRight: 20 }}>
+										start tomorrow
+									</div>
+
+									<div
+										style={{
+											width: 20,
+											height: 20,
+											background: "blue",
+											color: "white",
+											cursor: "pointer",
+											marginRight: 20,
+											padding: 3,
+										}}
+										onClick={(e) =>
+											setChallengeBasics({
+												...challengeBasics,
+												nextDay: true,
+											})
+										}
+									>
+										yes
+									</div>
+									<div
+										style={{
+											width: 20,
+											height: 20,
+											background: "blue",
+											color: "white",
+											cursor: "pointer",
+
+											padding: 3,
+										}}
+										onClick={(e) =>
+											setChallengeBasics({
+												...challengeBasics,
+												nextDay: false,
+											})
+										}
+									>
+										No
+									</div>
+								</div>
 							</div>
 							{/* <div>
 								<select
