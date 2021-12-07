@@ -208,7 +208,7 @@ function DisplayTable({
 								className={classes.tableTdTh}
 							>
 								{/* <button onClick={(e)=>{handleSorting(e,"last_updated")}}> */}
-								마지막으로 수정한 날짜
+								마지막 업데이트 일시
 								{sortBy.sortBy && sortBy.sortBy[0] === "-" ? (
 									<img
 										src={

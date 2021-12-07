@@ -174,6 +174,15 @@ function CustomerDetails() {
 					</div>
 				</div>
 				<div className={classes.infoContainer}>
+					<div>운영체제: </div>
+					<div className={classes.info}>
+						{data.allUsers.edges[0].node.UserDeviceInfo.total > 0
+							? data.allUsers.edges[0].node.UserDeviceInfo
+									.edges[0].node.os
+							: "X"}
+					</div>
+				</div>
+				<div className={classes.infoContainer}>
 					<div>마케팅 수신 동의 : </div>
 					<div className={classes.info}>
 						{data.allUsers.edges[0].node.userSetting.marketingAlarm

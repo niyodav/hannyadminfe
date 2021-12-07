@@ -1,19 +1,15 @@
-import  {React,useState,createContext} from 'react'
+import { React, useState, createContext } from "react";
 
-export const ChallengeGroupContext = createContext()
+export const ChallengeGroupContext = createContext();
 
+export function ChallengeGroupProvider(props) {
+	const [newChallengeGroup, setNewCchallengeGroup] = useState();
 
-export function ChallengeGroupProvider(props){
-    const [newChallengeGroup , setNewCchallengeGroup] = useState()
-    
-    return (
-        <ChallengeGroupContext.Provider value={[newChallengeGroup , setNewCchallengeGroup]}>
-            {props.children}
-
-        </ChallengeGroupContext.Provider>
-    )
-
+	return (
+		<ChallengeGroupContext.Provider
+			value={[newChallengeGroup, setNewCchallengeGroup]}
+		>
+			{props.children}
+		</ChallengeGroupContext.Provider>
+	);
 }
-
-
- 

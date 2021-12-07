@@ -150,8 +150,8 @@ function DisplayChallenges({ search, addModify }) {
 					fields={{
 						id: "challengeId",
 						name: "name",
-						title: "해피 챌린지명",
-						nextTableTitle: "차시 수",
+						title: "시나리오 그룹명 ",
+						nextTableTitle: "차시",
 						path: "/scenerio",
 						nextTotalCount: "challengeScenerio",
 						setting: "세부설정",

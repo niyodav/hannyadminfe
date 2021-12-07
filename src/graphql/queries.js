@@ -61,6 +61,11 @@ export const USER_INFO = gql`
 					}
 					UserDeviceInfo {
 						totalCount
+						edges {
+							node {
+								os
+							}
+						}
 					}
 					userSetting {
 						marketingAlarm
