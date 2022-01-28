@@ -1,0 +1,89 @@
+.login-container {
+	width: 100vw;
+	height: 100vh;
+	align-items: center;
+	justify-content: center;
+	/* background-image: url("../../../assets/images/login_bg.jpg"); */
+	background-repeat: no-repeat;
+	background-size: 100vw 100vh;
+}
+
+.login-white-box {
+	width: 370px;
+	background-color: white;
+	border-radius: 8px;
+	padding: 60px 40px 60px 40px;
+}
+
+.login-logo {
+	width: 201px;
+	height: 24px;
+	align-self: center;
+	background-image: url("https://hanny-uploads.s3.amazonaws.com/USER/UPLOADS/hannybanner1.png");
+	background-repeat: no-repeat;
+	background-size: 201px 24px;
+}
+
+.login-title {
+	font-size: 24px;
+	line-height: 1.04;
+	font-weight: 500;
+	color: #181818;
+	align-self: center;
+	margin-top: 29px;
+}
+
+.login-id-input {
+	font-size: 16px;
+	color: #181818;
+	width: 100%;
+	padding: 20px 0 20px 0;
+	margin: 39px 0 0 0;
+	border-bottom: 1px solid #f2f2f2;
+}
+
+.login-pw-input {
+	font-size: 16px;
+	color: #181818;
+	width: 100%;
+	padding: 20px 0 20px 0;
+	margin: 10px 0 0 0;
+	border-bottom: 1px solid #f2f2f2;
+}
+
+.login-save-row {
+	flex-direction: row;
+	align-items: center;
+	margin: 30px 0 40px 0;
+}
+
+.login-check-box {
+	width: 20px;
+	height: 20px;
+}
+
+.login-save-label {
+	margin: 0 0 0 10px;
+	font-size: 14px;
+	color: #181818;
+}
+
+.login-button-bg {
+	width: 370px;
+	height: 50px;
+	background-color: #00d97a;
+	border-radius: 20px;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.login-button-bg:active {
+	opacity: 0.9;
+}
+
+.login-button-text {
+	line-height: normal;
+	font-size: 15px;
+	color: white;
+}

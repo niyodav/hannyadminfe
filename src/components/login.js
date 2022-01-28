@@ -18,7 +18,6 @@ const clientId =
 function Login() {
 	const [value, setValue] = useStateWithLocalStorage("myValueInLocalStorage");
 	const onSuccess = (res) => {
-		console.log("[login success] currentUser:", res.profileObj);
 		setValue(res.profileObj);
 
 		refreshTokenSetup(res);
@@ -59,11 +58,6 @@ function Login() {
 						},
 					}}
 
-					// onChange={(e)=>{handleOnChange(e,row.node[fields.id],currentAction,fields.name)}}
-					// value={modifiedvalue.id===row.node[fields.id] ? modifiedvalue.content : ''}
-					// onBlur={handleOnBlur}
-					// onSubmit={handleOnBlur}
-					// onMouseOut={handleOnBlur}
 				/>
 			</div>
 			<div style={{ marginTop: 10 }}>
@@ -75,11 +69,7 @@ function Login() {
 					type="password"
 					InputProps={{ style: { background: "#fff" } }}
 
-					// onChange={(e)=>{handleOnChange(e,row.node[fields.id],currentAction,fields.name)}}
-					// value={modifiedvalue.id===row.node[fields.id] ? modifiedvalue.content : ''}
-					// onBlur={handleOnBlur}
-					// onSubmit={handleOnBlur}
-					// onMouseOut={handleOnBlur}
+		
 				/>
 			</div>
 			<div style={{ marginTop: 10 }}>
@@ -104,37 +94,3 @@ function Login() {
 }
 
 export default Login;
-
-// import React from 'react';
-
-// const useStateWithLocalStorage = localStorageKey => {
-//   const [value, setValue] = React.useState(
-//     localStorage.getItem(localStorageKey) || ''
-//   );
-
-//   React.useEffect(() => {
-//     localStorage.setItem(localStorageKey, value);
-//   }, [value]);
-
-//   return [value, setValue];
-// };
-
-// const App = () => {
-//   const [value, setValue] = useStateWithLocalStorage(
-//     'myValueInLocalStorage'
-//   );
-
-//   const onChange = event => setValue(event.target.value);
-
-//   return (
-//     <div>
-//       <h1>Hello React with Local Storage!</h1>
-
-//       <input value={value} type="text" onChange={onChange} />
-
-//       <p>{value}</p>
-//     </div>
-//   );
-// };
-
-// export default App;
