@@ -34,6 +34,7 @@ function Dashboard() {
 				<th className={classes.tableColumn}>날짜</th>
 				<th className={classes.tableColumn}>안드로이드</th>
 				<th className={classes.tableColumn}>IOS</th>
+				<th className={classes.tableColumn}>기타</th>
 				<th className={classes.tableColumn}>합계</th>
 			</thead>
 			<tbody>
@@ -42,12 +43,16 @@ function Dashboard() {
 						<tr key={row.createdAt} id={row.createdAt}>
 							<td className={classes.tableColumn}>
 								{row.createdAt}
+								{console.log(row)}
 							</td>
 							<td className={classes.tableColumn}>
 								{row.androidCount}
 							</td>
 							<td className={classes.tableColumn}>
 								{row.iosCount}
+							</td>
+							<td className={classes.tableColumn}>
+								{row.otherCount}
 							</td>
 							<td className={classes.tableColumn}>
 								{row.androidCount + row.iosCount}
@@ -66,7 +71,9 @@ function Dashboard() {
 			<h4>
 				총 합계:{" "}
 				{JSON.parse(data.dailyDeviceInfo[0]).androidTotal +
+					JSON.parse(data.dailyDeviceInfo[0]).otherTotal +
 					JSON.parse(data.dailyDeviceInfo[0]).iosTotal}{" "}
+				{JSON.parse(data.dailyDeviceInfo[0]).total}
 			</h4>
 			<div>
 				{" "}
@@ -74,6 +81,10 @@ function Dashboard() {
 				{JSON.parse(data.dailyDeviceInfo[0]).androidTotal}
 			</div>
 			<div> IOS 합계:{JSON.parse(data.dailyDeviceInfo[0]).iosTotal} </div>
+			<div>
+				{" "}
+				기타 합계:{JSON.parse(data.dailyDeviceInfo[0]).otherTotal}{" "}
+			</div>
 
 			<Table data={JSON.parse(data.dailyDeviceInfo[0])} />
 		</div>

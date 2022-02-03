@@ -24,8 +24,6 @@ import "./components/styles.css";
 
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { ApolloProvider } from "@apollo/client";
-import TsControl from "./components/TsControl";
-import CreateCategory from "./components/createCategory";
 import DisplayChallengesGroups from "./challenges/displayChallengesGroups";
 import DisplayChallenges from "./challenges/displayChallenges";
 import DisplayScenerios from "./scenerios/displayScenerios";
@@ -43,7 +41,9 @@ import { LocationContextProvider } from "./contexts/locationContext";
 import { SelectedCategoryContextProvider } from "./contexts/selectedCategoryContext";
 import { CreatedFileContextProvider } from "./contexts/createdFileContext";
 import { SelectedMenuContextProvider } from "./contexts/selectedMenuContext";
-import Login from "./components/login";
+// import Login from "./components/login";
+import Login from "./login/login";
+import UserRegistration from "./Register/registerUser";
 
 import ChallengeSettings from "./challenges/challengeSettings";
 import Dashboard from "./dashboards/dashboard";
@@ -51,7 +51,6 @@ import { API_BASE_URL } from "./globalConstants";
 import UploadBotChatMedia from "./botchats/uploadBotChatMedia";
 import CustomerMonitoring from "./customers/customerMonitoring";
 import CustomerDetails from "./customers/customerDetails";
-import UserAnswers from "./customers/Logs/userAnswers";
 import ChallengeSummery from "./challengeManagement/challengeSummery";
 import UserChallengeLogSummery from "./challengeManagement/userChallengeLogSummery";
 import ChallengeUserAnswers from "./customers/Logs/challengeUserAnswers";
@@ -75,7 +74,6 @@ const useStateWithLocalStorage = (localStorageKey) => {
 
 const useStyles = makeStyles((theme) => ({
 	drawerPaper: {
-		// width:"inherit",
 		display: "flex",
 
 		background: "#FCE205",
@@ -85,19 +83,12 @@ const useStyles = makeStyles((theme) => ({
 	},
 	link: {
 		textDecoration: "none",
-		// color: "#d9d9d9",
 		color: "black",
 		"&:hover": {
 			color: "#ff8000",
 		},
-		// color: theme.palette.text.primary,
-		// background: "#434343",
 	},
-	paper: {
-		// backgroundColor: "#434343",
-		minWidth: 200,
-		maxHeight: 400,
-	},
+	paper: { minWidth: 200, maxHeight: 400 },
 	Main: {
 		marginLeft: 190,
 	},
@@ -106,7 +97,6 @@ const useStyles = makeStyles((theme) => ({
 function App() {
 	const [value, setValue] = useStateWithLocalStorage("myValueInLocalStorage");
 
-	const [items, setItems] = useState("");
 	const [clicked, setClicked] = useState(false);
 
 	const classes = useStyles();
@@ -191,6 +181,36 @@ function App() {
 																		}
 																	>
 																		<Link
+																			to="/registeruser"
+																			className={
+																				classes.link
+																			}
+																		>
+																			<ListItem
+																				button
+																				onClick={() =>
+																					setClicked(
+																						"registeruser"
+																					)
+																				}
+																				style={
+																					clicked ===
+																					"registeruser"
+																						? {
+																								color:
+																									"#ff8000",
+																						  }
+																						: null
+																				}
+																			>
+																				<ListItemText
+																					primary={
+																						"가입 시키기"
+																					}
+																				/>
+																			</ListItem>
+																		</Link>
+																		<Link
 																			to="/dashboard"
 																			className={
 																				classes.link
@@ -213,18 +233,6 @@ function App() {
 																						: null
 																				}
 																			>
-																				{/* <img
-																					src={
-																						"https://hanny-uploads.s3.amazonaws.com/USER/UPLOADS/%E1%84%83%E1%85%A2%E1%84%89%E1%85%B5%E1%84%87%E1%85%A9%E1%84%83%E1%85%B3_PmThK5Y.png"
-																					}
-																					alt="increment"
-																					style={{
-																						width: 20,
-																						height: 20,
-																						marginRight: 10,
-																					}}
-																				/> */}
-
 																				<ListItemText
 																					primary={
 																						"대시보드"
@@ -432,21 +440,34 @@ function App() {
 																			exact
 																			path="/"
 																		>
-																			<div>
-																				{/* <VistedLinks/> */}
+																			<DisplayChallenges />
+																			{/* <div>
 
 																				{value ? (
 																					<DisplayChallenges />
 																				) : (
 																					<Login />
 																				)}
-																			</div>
+																			</div> */}
 																		</Route>
+																		<Route
+																			exact
+																			path="/login"
+																		>
+																			<Login />
+																		</Route>
+
 																		<Route
 																			exact
 																			path="/dashboard"
 																		>
 																			<Dashboard />
+																		</Route>
+																		<Route
+																			exact
+																			path="/registeruser"
+																		>
+																			<UserRegistration />
 																		</Route>
 																		<Route
 																			exact

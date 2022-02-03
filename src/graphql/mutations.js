@@ -132,6 +132,17 @@ export const CREATE_RESPONSES = gql`
 
 // Updates
 
+export const UPDATE_USER_CHALLENGE_LOG_STATUS = gql`
+	mutation($userId: String!, $status: String!) {
+		updateUserChallengeLogs(
+			filterInputs: { status: "inprogress", userId: $userId }
+			input: { status: $status }
+		) {
+			msg
+		}
+	}
+`;
+
 export const UPDATE_CHALLENGE_GROUPS = gql`
 	mutation($challengeId: String!, $name: String!) {
 		updateChallengeGroup(

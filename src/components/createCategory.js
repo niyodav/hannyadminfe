@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, TextField } from "@material-ui/core";
 import { useState, useContext } from "react";
-import uuid from "uuid";
+import { v1 as uuid } from "uuid";
 import { CategoryContext } from "../contexts/categoriesContext";
 
 import { makeStyles } from "@material-ui/core/styles";

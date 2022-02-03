@@ -1,7 +1,7 @@
 import React from "react";
 import { TextField, Button } from "@material-ui/core";
 import { useState, useContext, useEffect } from "react";
-import uuid from "uuid";
+import { v1 as uuid } from "uuid";
 
 import { CreatedtextContext } from "../contexts/createdTextContext";
 

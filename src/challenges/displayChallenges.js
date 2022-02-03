@@ -68,6 +68,7 @@ function DisplayChallenges({ search, addModify }) {
 				...updateCategory,
 				challenge: false,
 			});
+			setSortBy("-idx");
 		};
 	}, [
 		newCategory.challenge,
@@ -75,7 +76,7 @@ function DisplayChallenges({ search, addModify }) {
 		selectedMenu.challenge.id,
 	]);
 	const { loading, error, data, refetch } = useQuery(CHALLENGES, {
-		variables: { orderBy: "-idx" },
+		variables: { orderBy: sortBy.sortBy },
 	});
 
 	let challengeGroup = selectedCategoryContext.challengeGroup

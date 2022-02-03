@@ -4,7 +4,8 @@ import { useState, useRef, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams, useLocation, Link } from "react-router-dom";
 
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
+import { UPDATE_USER_CHALLENGE_LOG_STATUS } from "../graphql/mutations";
 
 import {
 	USER_TOTAL_POINTS,
@@ -12,6 +13,7 @@ import {
 	USER_CHALLENGE_LOG,
 } from "../graphql/queries";
 import UserChallengeLogSummery from "../challengeManagement/userChallengeLogSummery";
+import { Button } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
 	tableColumn: {
 		padding: "8px",
@@ -32,10 +34,17 @@ const useStyles = makeStyles((theme) => ({
 	info: {
 		marginLeft: 20,
 	},
+	button: {
+		height: 30,
+		width: 80,
+	},
 }));
 function CustomerDetails() {
 	const classes = useStyles();
 	const { userId } = useParams();
+	const [updateUserChallengeLog] = useMutation(
+		UPDATE_USER_CHALLENGE_LOG_STATUS
+	);
 
 	const { loading, error, data, refetch } = useQuery(USER_INFO, {
 		variables: {
@@ -204,6 +213,25 @@ function CustomerDetails() {
 				<div className={classes.infoContainer}>
 					<div>타임존 : </div>
 					<div className={classes.info}>{}</div>
+				</div>
+
+				<div>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={() => {
+							if (window.confirm("삭체 하시겠습니까?")) {
+								updateUserChallengeLog({
+									variables: {
+										status: "completed",
+										userId: userId,
+									},
+								});
+							}
+						}}
+					>
+						챌랜지 종료
+					</Button>
 				</div>
 			</div>
 		</div>

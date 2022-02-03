@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect, useContext } from "react";
-import uuid from "uuid";
+import { v1 as uuid } from "uuid";
 import axios from "axios";
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField } from "@material-ui/core";

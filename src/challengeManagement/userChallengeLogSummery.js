@@ -174,7 +174,7 @@ function UserChallengeLogSummery({ userId, status }) {
 					<th className={classes.tableColumn}>마지막 접속</th>
 					<th className={classes.tableColumn}>메시지 받는시간</th>
 					<th className={classes.tableColumn}>획득한 포인트</th>
-
+					<th className={classes.tableColumn}>상태</th>
 					{data.data.length > 0 &&
 						!userId &&
 						!status &&
@@ -237,21 +237,53 @@ function UserChallengeLogSummery({ userId, status }) {
 									<td className={classes.tableColumn}>
 										{obj.challengePoints}
 									</td>
+									<td className={classes.tableColumn}>
+										<div
+											style={{ flexDirection: "column" }}
+										>
+											<div>발성</div>
+											<div>완료</div>
+										</div>
+									</td>
 									{!userId &&
 										!status &&
-										JSON.parse(
-											data.data[0]
-										).scenerios.map((td) => (
-											<td className={classes.tableColumn}>
-												{JSON.parse(
-													data.data[index]
-												).scenerioLogs.filter(
-													(item) => item === td
-												).length > 0
-													? "O"
-													: "X"}
-											</td>
-										))}
+										JSON.parse(data.data[0]).scenerios.map(
+											(td) => (
+												<td
+													className={
+														classes.tableColumn
+													}
+												>
+													<div
+														style={{
+															flexDirection:
+																"column",
+														}}
+													>
+														<div>
+															{JSON.parse(
+																data.data[index]
+															).scenerioLogs.filter(
+																(item) =>
+																	item === td
+															).length > 0
+																? "O"
+																: "X"}
+														</div>
+														<div>
+															{JSON.parse(
+																data.data[index]
+															).completedLogs.filter(
+																(item) =>
+																	item === td
+															).length > 0
+																? "O"
+																: "X"}
+														</div>
+													</div>
+												</td>
+											)
+										)}
 								</tr>
 							);
 						})}
