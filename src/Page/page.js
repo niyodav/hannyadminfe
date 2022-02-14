@@ -1,33 +1,39 @@
 // import Header from "./Header";
 // import Footer from "./Footer";
-import "./Page.css";
+import "./page.css";
 // import Nav from "./Nav";
 import { useHistory } from "react-router";
-import { useCallback, useEffect } from "react";
-import { useStores } from "../../../stores";
+import { useCallback, useEffect, useState } from "react";
+
+import Cookies from "universal-cookie";
+import { useMutation } from "@apollo/client";
+import { VERIFY_TOKEN } from "../graphql/mutations";
 
 const Page = ({ children, labels, links, needPermission }) => {
-	const { userStore } = useStores();
 	const history = useHistory();
+	const cookies = new Cookies();
+	const [verify, setVerify] = useState(false);
+
+	const [verifyToken] = useMutation(VERIFY_TOKEN, {
+		onCompleted(data) {
+			if (data) {
+				setVerify(data);
+			} else {
+				history.replace("/login");
+			}
+		},
+	});
+
 	const checkLogin = useCallback(async () => {
-		const res = await userStore.fetchMyInfo();
-		if (!res.ok) {
+		const token = cookies.get("loginToken");
+		if (!token) {
 			history.replace("/login");
 		} else {
-			if (!!needPermission) {
-				let granted = true;
-				needPermission.forEach((permission) => {
-					if (!userStore.getMyInfo[permission]) {
-						granted = false;
-					}
-				});
-				if (!granted) {
-					alert("권한이 없습니다");
-					history.goBack();
-				}
-			}
+			verifyToken({
+				variables: { token: token },
+			});
 		}
-	}, [userStore, history, needPermission]);
+	}, []);
 
 	useEffect(() => {
 		checkLogin();

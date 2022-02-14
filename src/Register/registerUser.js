@@ -2,25 +2,16 @@ import React, { useState, useEffect } from "react";
 import "./register.css";
 import checked from "../assets/images/icon_checked.png";
 import unchecked from "../assets/images/icon_unchecked.png";
-import Cookies from "universal-cookie";
 import { useHistory } from "react-router";
 
 const UserRegistration = () => {
 	const history = useHistory();
 	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [superUser, setSuperUser] = useState(false);
 	const [isStaff, setIsStaff] = useState(false);
 
-	useEffect(() => {
-		const cookies = new Cookies();
-		const savedEmail = cookies.get("loginEmail");
-		if (savedEmail) {
-			setEmail(savedEmail);
-			// setSaveChecked(true);
-		}
-	}, []);
 	const toggleCheckStaff = () => {
 		setIsStaff(!isStaff);
 	};
@@ -28,7 +19,7 @@ const UserRegistration = () => {
 		setSuperUser(!superUser);
 	};
 	const onLogin = async () => {
-		if (email.length === 0) {
+		if (username.length === 0) {
 			alert("이메일 아이디를 입력하세요");
 			return;
 		}
@@ -58,10 +49,10 @@ const UserRegistration = () => {
 				/>
 				<input
 					className="login-id-input"
-					type="email"
-					placeholder="이메일 아이디"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
+					type="username"
+					placeholder=" 아이디"
+					value={username}
+					onChange={(e) => setUsername(e.target.value)}
 				/>
 				<input
 					className="login-pw-input"

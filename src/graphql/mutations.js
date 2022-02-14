@@ -1,5 +1,21 @@
 import { gql } from "@apollo/client";
 
+export const TOKEN_AUTH = gql`
+	mutation($username: String!, $password: String!) {
+		tokenAuth(username: $username, password: $password) {
+			token
+		}
+	}
+`;
+
+export const VERIFY_TOKEN = gql`
+	mutation($token: String!) {
+		verifyToken(token: $token) {
+			payload
+		}
+	}
+`;
+
 export const CREATE_CHALLENGE_GROUPS = gql`
 	mutation($challengeId: String, $name: String) {
 		createChallengeGroups(

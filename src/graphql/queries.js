@@ -24,6 +24,10 @@ export const ALL_USERS = gql`
 		$usernameContains: String
 		$dateJoinedLte: String
 		$dateJoinedGte: String
+		$first: Int
+		$last: Int
+		$after: String
+		$before: String
 	) {
 		allUsers(
 			orderBy: $orderBy
@@ -31,8 +35,18 @@ export const ALL_USERS = gql`
 			email: $email
 			dateJoinedLte: $dateJoinedLte
 			dateJoinedGte: $dateJoinedGte
+			first: $first
+			last: $last
+			before: $before
+			after: $after
 		) {
 			totalCount
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+			}
 			edges {
 				node {
 					email
@@ -111,14 +125,85 @@ export const USER_CHALLENGE_LOG = gql`
 `;
 
 export const CHALLENGES = gql`
-	query($orderBy: String!) {
-		challenges(orderBy: $orderBy) {
+	query(
+		$orderBy: String
+		$first: Int
+		$last: Int
+		$after: String
+		$before: String
+	) {
+		challenges(
+			orderBy: $orderBy
+			first: $first
+			last: $last
+			before: $before
+			after: $after
+		) {
+			totalCount
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+			}
 			edges {
+				cursor
 				node {
 					name
 					challengeId
 					lastUpdated
 					challengeScenerio {
+						totalCount
+					}
+				}
+			}
+		}
+	}
+`;
+
+export const TS_SCENERIO_NAMES = gql`
+	query($challengeId: String!) {
+		tsScenerio(challengeId: $challengeId) {
+			edges {
+				node {
+					name
+					scenerioId
+				}
+			}
+		}
+	}
+`;
+
+export const TS_SCENERIO = gql`
+	query(
+		$challengeId: String!
+		$orderBy: String
+		$first: Int
+		$last: Int
+		$after: String
+		$before: String
+	) {
+		tsScenerio(
+			challengeId: $challengeId
+			orderBy: $orderBy
+			first: $first
+			last: $last
+			before: $before
+			after: $after
+		) {
+			totalCount
+			pageInfo {
+				hasNextPage
+				hasPreviousPage
+				startCursor
+				endCursor
+			}
+			edges {
+				node {
+					name
+					scenerioId
+					lastUpdated
+					scenerioBlocks {
 						totalCount
 					}
 				}
@@ -266,23 +351,6 @@ export const CHALLENGES_TO_BLOCK = gql`
 								}
 							}
 						}
-					}
-				}
-			}
-		}
-	}
-`;
-
-export const TS_SCENERIO = gql`
-	query($challengeId: String!, $orderBy: String!) {
-		tsScenerio(challengeId: $challengeId, orderBy: $orderBy) {
-			edges {
-				node {
-					name
-					scenerioId
-					lastUpdated
-					scenerioBlocks {
-						totalCount
 					}
 				}
 			}
@@ -556,15 +624,11 @@ export const USER_COUNTS = gql`
 	}
 `;
 
-export const USER_CHALLENGE_LOG_SUMMERY = gql`
-	query($percentages: Boolean) {
-		userChallengeLogSummery(percentages: $percentages)
-	}
-`;
 export const CHALLENGE_ETAGS_SUMMERY = gql`
 	query(
 		$challengeId: String
 		$email: String
+		$scenerioId: String
 		$eTag: String
 		$createdAtGte: String
 		$createdAtLte: String
@@ -573,6 +637,7 @@ export const CHALLENGE_ETAGS_SUMMERY = gql`
 			challengeId: $challengeId
 			email: $email
 			eTag: $eTag
+			scenerioId: $scenerioId
 			createdAtGte: $createdAtGte
 			createdAtLte: $createdAtLte
 		)
@@ -588,6 +653,8 @@ export const USER_SCENERIO_LOG_SUMMERY = gql`
 		$accesscode: String
 		$startDateLte: String
 		$startDateGte: String
+		$lastIndex: String
+		$page: String
 	) {
 		userScenerioLogSummery(
 			challengeId: $challengeId
@@ -597,10 +664,21 @@ export const USER_SCENERIO_LOG_SUMMERY = gql`
 			accesscode: $accesscode
 			startDateLte: $startDateLte
 			startDateGte: $startDateGte
+			lastIndex: $lastIndex
+			page: $page
 		)
 	}
 `;
 
+export const USER_CHALLENGE_LOG_SUMMERY = gql`
+	query($percentages: Boolean, $lastIndex: String, $page: String) {
+		userChallengeLogSummery(
+			percentages: $percentages
+			lastIndex: $lastIndex
+			page: $page
+		)
+	}
+`;
 export const CHALLENGE_ACCESSCODE = gql`
 	query($challengeId: String) {
 		allAccessCodes(challengeId: $challengeId) {

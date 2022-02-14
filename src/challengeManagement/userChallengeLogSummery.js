@@ -8,28 +8,37 @@ import {
 	KeyboardDatePicker,
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import Pagination from "../components/Pagination";
 
 import { useQuery } from "@apollo/client";
 import { USER_SCENERIO_LOG_SUMMERY } from "../graphql/queries";
 import { TextField, Button } from "@material-ui/core";
+
 const useStyles = makeStyles((theme) => ({
 	SearchContainer: {
 		display: "flex",
+		flexDirection: "column",
 	},
 	SearchItems: {
-		display: "flex",
 		flexDirection: "column",
-		alignItems: "center",
-		justifyContent: "center",
+		// alignItems: "center",
+		// justifyContent: "center",
 	},
 	SearchItem: {
 		marginRight: 8,
+		// justifyContent: "center",
+	},
+	SearchButton: {
+		width: 200,
+		height: 50,
+		alignItems: "center",
 		justifyContent: "center",
 	},
 	datePickerContainer: {
-		display: "flex",
 		marginTop: 20,
 		marginBottom: 20,
+		alignItems: "center",
+		flexDirection: "row",
 	},
 	datePicker: {
 		flexDirection: "row",
@@ -54,6 +63,9 @@ function UserChallengeLogSummery({ userId, status }) {
 		by: "email",
 		content: "",
 	});
+	const [page, setPage] = useState("");
+	const [lastIndex, setLastIndex] = useState("");
+
 	const now = new Date();
 	const prevDate = new Date();
 	prevDate.setDate(prevDate.getDate() - 7);
@@ -127,19 +139,33 @@ function UserChallengeLogSummery({ userId, status }) {
 						: null,
 				startDateLte: !search.content ? datePicker.to : null,
 				startDateGte: !search.content ? datePicker.from : null,
+				lastIndex: page && lastIndex ? lastIndex : null,
+				page: page && lastIndex ? page : null,
 			};
 		} else {
 			return {
-				challengeId: challengeId,
+				challengeId: !userId && !status ? challengeId : null,
+				userId: userId && status ? userId : null,
+				status: userId && status ? status : null,
 				email: search.by === "email" ? search.content : null,
 				accesscode: search.by === "accesscode" ? search.content : null,
 				startDateLte: !search.content ? datePicker.to : null,
 				startDateGte: !search.content ? datePicker.from : null,
+				lastIndex: page && lastIndex ? lastIndex : null,
+				page: page && lastIndex ? page : null,
 			};
 		}
 	};
 	const { loading, error, data } = useQuery(USER_SCENERIO_LOG_SUMMERY, {
-		variables: getVariables(),
+		variables: {
+			challengeId: challengeId,
+			email: search.by === "email" ? search.content : null,
+			accesscode: search.by === "accesscode" ? search.content : null,
+			startDateLte: !search.content ? datePicker.to : null,
+			startDateGte: !search.content ? datePicker.from : null,
+			lastIndex: page && lastIndex ? lastIndex : null,
+			page: page && lastIndex ? page : null,
+		},
 	});
 
 	function handleSearch() {
@@ -148,6 +174,14 @@ function UserChallengeLogSummery({ userId, status }) {
 			setDatePicker(datePickerChange);
 		}
 	}
+
+	const checkPage = (item) => {
+		setPage(item);
+
+		if (data && data.userScenerioLogSummery.length > 0) {
+			setLastIndex(JSON.parse(data.userScenerioLogSummery[0]).lastIndex);
+		}
+	};
 
 	const Table = (data) => (
 		<div>
@@ -178,7 +212,7 @@ function UserChallengeLogSummery({ userId, status }) {
 					{data.data.length > 0 &&
 						!userId &&
 						!status &&
-						JSON.parse(data.data[0]).scenerios.map((th) => (
+						JSON.parse(data.data[1]).scenerios.map((th) => (
 							<th className={classes.tableColumn}>{th}</th>
 						))}
 				</thead>
@@ -186,6 +220,10 @@ function UserChallengeLogSummery({ userId, status }) {
 					{data.data.length > 0 &&
 						data.data.map((row, index) => {
 							let obj = JSON.parse(row);
+							if (obj.hasOwnProperty("dataCount")) {
+								return null;
+							}
+
 							return (
 								<tr key={obj.challengeId} id={obj.challengeId}>
 									<td className={classes.tableColumn}>
@@ -202,6 +240,7 @@ function UserChallengeLogSummery({ userId, status }) {
 											? "성공"
 											: "실패"}
 									</td>
+
 									<td className={classes.tableColumn}>
 										{"~"}
 									</td>
@@ -247,7 +286,7 @@ function UserChallengeLogSummery({ userId, status }) {
 									</td>
 									{!userId &&
 										!status &&
-										JSON.parse(data.data[0]).scenerios.map(
+										JSON.parse(data.data[1]).scenerios.map(
 											(td) => (
 												<td
 													className={
@@ -298,47 +337,48 @@ function UserChallengeLogSummery({ userId, status }) {
 		<div style={{ marginLeft: 20, marginTop: 20 }}>
 			{!userId && !status && (
 				<div className={classes.SearchContainer}>
-					<div>
-						<select
-							className={classes.SearchItem}
-							onChange={(e) =>
+					<div style={{ flexDirection: "row" }}>
+						<div>
+							<select
+								className={classes.SearchItem}
+								onChange={(e) =>
+									setSearchTextChange({
+										...searchTextChange,
+										by: e.target.value,
+									})
+								}
+							>
+								<option value="email">email</option>
+								<option value="accesscode">코드번호</option>
+							</select>
+						</div>
+						<TextField
+							variant="outlined"
+							id="standard-multiline-flexible"
+							multiline
+							type="text"
+							name="text"
+							size="small"
+							defaultValue={searchTextChange.content}
+							className={classes.textInputs}
+							InputProps={{
+								style: {
+									fontSize: 12,
+									fontFamily: "NanumSquare",
+									width: 400,
+								},
+							}}
+							onChange={(e) => {
+								const { value } = e.target;
 								setSearchTextChange({
 									...searchTextChange,
-									by: e.target.value,
-								})
-							}
-						>
-							<option value="email">email</option>
-							<option value="accesscode">코드번호</option>
-						</select>
+									content: value,
+								});
+							}}
+						/>
 					</div>
 					<div className={classes.SearchItems}>
 						<div>
-							<TextField
-								variant="outlined"
-								id="standard-multiline-flexible"
-								multiline
-								type="text"
-								name="text"
-								size="small"
-								defaultValue={searchTextChange.content}
-								className={classes.textInputs}
-								InputProps={{
-									style: {
-										fontSize: 12,
-										fontFamily: "NanumSquare",
-										width: 400,
-									},
-								}}
-								onChange={(e) => {
-									const { value } = e.target;
-									setSearchTextChange({
-										...searchTextChange,
-										content: value,
-									});
-								}}
-							/>
-
 							<div className={classes.datePickerContainer}>
 								<MuiPickersUtilsProvider
 									utils={DateFnsUtils}
@@ -448,7 +488,7 @@ function UserChallengeLogSummery({ userId, status }) {
 							<Button
 								color="primary"
 								variant="outlined"
-								className={classes.SearchItem}
+								className={classes.SearchButton}
 								onClick={handleSearch}
 							>
 								search
@@ -475,6 +515,15 @@ function UserChallengeLogSummery({ userId, status }) {
 			)}
 
 			<Table data={data.userScenerioLogSummery} />
+			<div
+				style={{
+					flexDirection: "column",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Pagination checkState={checkPage} />
+			</div>
 		</div>
 	);
 }

@@ -10,6 +10,7 @@ import { API_BASE_URL, S3_BASE_URL } from "../globalConstants";
 // import UploadImage from "../components/uploadImage";
 import { useQuery } from "@apollo/client";
 import { DAILYDEVICEINFO } from "../graphql/queries";
+import Page from "../Page/page";
 const useStyles = makeStyles((theme) => ({
 	tableColumn: {
 		// padding: "25px 25px 25px 25px  25px",
@@ -67,27 +68,34 @@ function Dashboard() {
 	if (error) return <p>there was an error</p>;
 
 	return (
-		<div style={{ marginLeft: 20, marginTop: 20 }}>
-			<h4>
-				총 합계:{" "}
-				{JSON.parse(data.dailyDeviceInfo[0]).androidTotal +
-					JSON.parse(data.dailyDeviceInfo[0]).otherTotal +
-					JSON.parse(data.dailyDeviceInfo[0]).iosTotal}{" "}
-				{JSON.parse(data.dailyDeviceInfo[0]).total}
-			</h4>
-			<div>
-				{" "}
-				안드로이드 합계:{" "}
-				{JSON.parse(data.dailyDeviceInfo[0]).androidTotal}
-			</div>
-			<div> IOS 합계:{JSON.parse(data.dailyDeviceInfo[0]).iosTotal} </div>
-			<div>
-				{" "}
-				기타 합계:{JSON.parse(data.dailyDeviceInfo[0]).otherTotal}{" "}
-			</div>
+		<Page>
+			<div style={{ marginLeft: 20, marginTop: 20 }}>
+				<h4>
+					총 합계:{" "}
+					{JSON.parse(data.dailyDeviceInfo[0]).androidTotal +
+						JSON.parse(data.dailyDeviceInfo[0]).otherTotal +
+						JSON.parse(data.dailyDeviceInfo[0]).iosTotal}{" "}
+					{JSON.parse(data.dailyDeviceInfo[0]).total}
+				</h4>
+				<div>
+					{" "}
+					안드로이드 합계:{" "}
+					{JSON.parse(data.dailyDeviceInfo[0]).androidTotal}
+				</div>
+				<div>
+					{" "}
+					IOS 합계:{JSON.parse(data.dailyDeviceInfo[0]).iosTotal}{" "}
+				</div>
+				<div>
+					{" "}
+					기타 합계:{
+						JSON.parse(data.dailyDeviceInfo[0]).otherTotal
+					}{" "}
+				</div>
 
-			<Table data={JSON.parse(data.dailyDeviceInfo[0])} />
-		</div>
+				<Table data={JSON.parse(data.dailyDeviceInfo[0])} />
+			</div>
+		</Page>
 	);
 }
 

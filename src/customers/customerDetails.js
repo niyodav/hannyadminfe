@@ -220,7 +220,7 @@ function CustomerDetails() {
 						variant="contained"
 						color="primary"
 						onClick={() => {
-							if (window.confirm("삭체 하시겠습니까?")) {
+							if (window.confirm("챌린지 종료하겠습니까?")) {
 								updateUserChallengeLog({
 									variables: {
 										status: "completed",

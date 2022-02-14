@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
@@ -12,24 +12,34 @@ import DateFnsUtils from "@date-io/date-fns";
 import { useQuery } from "@apollo/client";
 import { ALL_USERS, USER_COUNTS } from "../graphql/queries";
 import { TextField, Button } from "@material-ui/core";
+import Page from "../Page/page";
+import Pagination from "../components/Pagination";
+import { CursorContext } from "../contexts/cursorContext";
+
 const useStyles = makeStyles((theme) => ({
 	SearchContainer: {
 		display: "flex",
+		flexDirection: "column",
+		marginBottom: 20,
 	},
 	SearchItems: {
-		display: "flex",
 		flexDirection: "column",
-		alignItems: "center",
-		justifyContent: "center",
 	},
 	SearchItem: {
 		marginRight: 8,
 		justifyContent: "center",
 	},
+	searchButton: {
+		width: 200,
+		height: 50,
+		alignItems: "center",
+		justifyContent: "center",
+	},
 	datePickerContainer: {
-		display: "flex",
-		marginTop: 20,
 		marginBottom: 20,
+		marginTop: 20,
+		alignItems: "center",
+		flexDirection: "row",
 	},
 	datePicker: {
 		flexDirection: "row",
@@ -54,6 +64,9 @@ function CustomerMonitoring() {
 		by: "email",
 		content: "",
 	});
+	const [page, setPage] = useState("");
+	const [cursor, setCursor] = useContext(CursorContext);
+
 	const now = new Date();
 	const prevDate = new Date();
 	prevDate.setDate(prevDate.getDate() - 7);
@@ -120,6 +133,16 @@ function CustomerMonitoring() {
 			email: search.by === "email" ? search.content : null,
 			dateJoinedGte: !search.content ? datePicker.from : null,
 			dateJoinedLte: !search.content ? datePicker.to : null,
+			first: !page ? 15 : page === "next" ? 15 : null,
+			last: page === "prev" ? 15 : null,
+			after:
+				page === "next" && String(cursor.users)
+					? String(cursor.users.endCursor)
+					: null,
+			before:
+				page === "prev" && String(cursor.users)
+					? String(cursor.users.startCursor)
+					: null,
 		},
 	});
 
@@ -130,6 +153,17 @@ function CustomerMonitoring() {
 		}
 	}
 
+	const checkPage = (item) => {
+		if (data && data.allUsers.pageInfo) {
+			setCursor({
+				users: {
+					startCursor: data.allUsers.pageInfo.startCursor,
+					endCursor: data.allUsers.pageInfo.endCursor,
+				},
+			});
+		}
+		setPage(item);
+	};
 	const Table = (data) => (
 		<table>
 			<thead>
@@ -137,9 +171,6 @@ function CustomerMonitoring() {
 				<th className={classes.tableColumn}>가입SNS</th>
 				<th className={classes.tableColumn}>닉네임</th>
 				<th className={classes.tableColumn}>가입일</th>
-				{/* <th className={classes.tableColumn}>현재 해니포인트</th> */}
-				{/* <th className={classes.tableColumn}>마지막 접속</th>
-				<th className={classes.tableColumn}>마케팅 수신 동의</th> */}
 			</thead>
 			<tbody>
 				{data.data.map((row) => (
@@ -171,7 +202,9 @@ function CustomerMonitoring() {
 								to={"/customerdetails/" + row.node.username}
 								className={classes.link}
 							>
-								{row.node.UserProfile.nickname}
+								{row.node.UserProfile
+									? row.node.UserProfile.nickname
+									: "~"}
 							</Link>
 						</td>
 						<td className={classes.tableColumn}>
@@ -189,24 +222,23 @@ function CustomerMonitoring() {
 	if (errorUserCounts) return <p>there was an erroeer</p>;
 
 	return (
-		<div style={{ marginLeft: 20, marginTop: 20 }}>
-			<div className={classes.SearchContainer}>
-				<div>
-					<select
-						className={classes.SearchItem}
-						onChange={(e) =>
-							setSearchTextChange({
-								...searchTextChange,
-								by: e.target.value,
-							})
-						}
-					>
-						<option value="email">email</option>
-						<option value="sns">sns</option>
-					</select>
-				</div>
-				<div className={classes.SearchItems}>
-					<div>
+		<Page>
+			<div style={{ marginLeft: 20, marginTop: 20 }}>
+				<div className={classes.SearchContainer}>
+					<div style={{ flexDirection: "row" }}>
+						<select
+							className={classes.SearchItem}
+							onChange={(e) =>
+								setSearchTextChange({
+									...searchTextChange,
+									by: e.target.value,
+								})
+							}
+						>
+							<option value="email">email</option>
+							<option value="sns">sns</option>
+						</select>
+
 						<TextField
 							variant="outlined"
 							id="standard-multiline-flexible"
@@ -233,134 +265,151 @@ function CustomerMonitoring() {
 								});
 							}}
 						/>
-
-						<div className={classes.datePickerContainer}>
-							<MuiPickersUtilsProvider
-								utils={DateFnsUtils}
-								style={{
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<div className={classes.datePicker}>
-									<KeyboardDatePicker
-										autoOk
-										variant="standard"
-										inputVariant="outlined"
-										label="가입일 from"
-										format="yyyy-MM-dd"
-										value={datePickerChange.from}
-										InputAdornmentProps={{
-											position: "start",
-										}}
-										style={{
-											width: 200,
-										}}
-										onChange={(date) =>
-											setDatePickerChange({
-												...datePickerChange,
-												from:
-													date.getFullYear() +
-													"-" +
-													(String(date.getMonth() + 1)
-														.length > 1
-														? date.getMonth() + 1
-														: "0" +
-														  String(
-																date.getMonth() +
-																	1
-														  )) +
-													"-" +
-													(String(date.getDate())
-														.length > 1
-														? date.getDate()
-														: "0" +
-														  String(
-																date.getDate()
-														  )),
-											})
-										}
-									/>
-								</div>
-
-								<div
+					</div>
+					<div className={classes.SearchItems}>
+						<div>
+							<div className={classes.datePickerContainer}>
+								<MuiPickersUtilsProvider
+									utils={DateFnsUtils}
 									style={{
-										marginLeft: 10,
-										marginRight: 10,
+										justifyContent: "center",
+										alignItems: "center",
 									}}
 								>
-									~
-								</div>
-								<div className={classes.datePicker}>
-									<KeyboardDatePicker
-										autoOk
-										variant="inline"
-										inputVariant="outlined"
-										label="가입일 to"
-										format="yyyy-MM-dd"
-										value={datePickerChange.to}
-										InputAdornmentProps={{
-											position: "start",
-										}}
+									<div className={classes.datePicker}>
+										<KeyboardDatePicker
+											autoOk
+											variant="standard"
+											inputVariant="outlined"
+											label="가입일 from"
+											format="yyyy-MM-dd"
+											value={datePickerChange.from}
+											InputAdornmentProps={{
+												position: "start",
+											}}
+											style={{
+												width: 200,
+											}}
+											onChange={(date) =>
+												setDatePickerChange({
+													...datePickerChange,
+													from:
+														date.getFullYear() +
+														"-" +
+														(String(
+															date.getMonth() + 1
+														).length > 1
+															? date.getMonth() +
+															  1
+															: "0" +
+															  String(
+																	date.getMonth() +
+																		1
+															  )) +
+														"-" +
+														(String(date.getDate())
+															.length > 1
+															? date.getDate()
+															: "0" +
+															  String(
+																	date.getDate()
+															  )),
+												})
+											}
+										/>
+									</div>
+
+									<div
 										style={{
-											width: 200,
+											marginLeft: 10,
+											marginRight: 10,
 										}}
-										onChange={(date) =>
-											setDatePickerChange({
-												...datePickerChange,
-												to:
-													date.getFullYear() +
-													"-" +
-													(String(date.getMonth() + 1)
-														.length > 1
-														? date.getMonth() + 1
-														: "0" +
-														  String(
-																date.getMonth() +
-																	1
-														  )) +
-													"-" +
-													(String(date.getDate())
-														.length > 1
-														? date.getDate()
-														: "0" +
-														  String(
-																date.getDate()
-														  )),
-											})
-										}
-									/>
-								</div>
-							</MuiPickersUtilsProvider>
+									>
+										~
+									</div>
+									<div className={classes.datePicker}>
+										<KeyboardDatePicker
+											autoOk
+											variant="inline"
+											inputVariant="outlined"
+											label="가입일 to"
+											format="yyyy-MM-dd"
+											value={datePickerChange.to}
+											InputAdornmentProps={{
+												position: "start",
+											}}
+											style={{
+												width: 200,
+											}}
+											onChange={(date) =>
+												setDatePickerChange({
+													...datePickerChange,
+													to:
+														date.getFullYear() +
+														"-" +
+														(String(
+															date.getMonth() + 1
+														).length > 1
+															? date.getMonth() +
+															  1
+															: "0" +
+															  String(
+																	date.getMonth() +
+																		1
+															  )) +
+														"-" +
+														(String(date.getDate())
+															.length > 1
+															? date.getDate()
+															: "0" +
+															  String(
+																	date.getDate()
+															  )),
+												})
+											}
+										/>
+									</div>
+								</MuiPickersUtilsProvider>
+							</div>
+						</div>
+
+						<div className={classes.searchButton}>
+							<Button
+								color="primary"
+								variant="outlined"
+								className={classes.SearchItem}
+								onClick={handleSearch}
+							>
+								search
+							</Button>
 						</div>
 					</div>
+				</div>
 
-					<div className={classes.searchButton}>
-						<Button
-							color="primary"
-							variant="outlined"
-							className={classes.SearchItem}
-							onClick={handleSearch}
-						>
-							search
-						</Button>
+				<div style={{ marginBottom: 20 }}>
+					<div>
+						총 누적 :{" "}
+						{JSON.parse(dataUserCounts.userCounts).totalCount}{" "}
 					</div>
+					<div>
+						오늘 가입 :{" "}
+						{JSON.parse(dataUserCounts.userCounts).todayCount}{" "}
+					</div>
+					<div> 총 filter 데이터 : {data.allUsers.totalCount} </div>
+				</div>
+
+				<Table data={data.allUsers.edges} />
+				<div
+					style={{
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+				>
+					<Pagination checkState={checkPage} />
 				</div>
 			</div>
-
-			<div style={{ marginBottom: 20 }}>
-				<div>
-					총 누적 : {JSON.parse(dataUserCounts.userCounts).totalCount}{" "}
-				</div>
-				<div>
-					오늘 가입 :{" "}
-					{JSON.parse(dataUserCounts.userCounts).todayCount}{" "}
-				</div>
-				<div> 총 filter 데이터 : {data.allUsers.totalCount} </div>
-			</div>
-
-			<Table data={data.allUsers.edges} />
-		</div>
+		</Page>
 	);
 }
 

@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 		marginBottom: 40,
 	},
 	textInputs: {
-		background: "#FFF",
+		// backgroundColor: "#FFF",
 		fontSize: "9px",
 		fontFamily: "NanumSquare",
 		borderRadius: 10,

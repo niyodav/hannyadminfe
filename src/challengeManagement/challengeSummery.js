@@ -3,18 +3,19 @@ import { useState, useEffect } from "react";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { useParams, Link } from "react-router-dom";
-import {
-	DatePicker,
-	TimePicker,
-	DateTimePicker,
-	MuiPickersUtilsProvider,
-	KeyboardDatePicker,
-} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
+// import {
+// 	DatePicker,
+// 	TimePicker,
+// 	DateTimePicker,
+// 	MuiPickersUtilsProvider,
+// 	KeyboardDatePicker,
+// } from "@material-ui/pickers";
+// import DateFnsUtils from "@date-io/date-fns";
+import Pagination from "../components/Pagination";
 
 import { useQuery } from "@apollo/client";
-import { ALL_USERS, USER_CHALLENGE_LOG_SUMMERY } from "../graphql/queries";
-import { TextField, Button, MenuItem } from "@material-ui/core";
+import { USER_CHALLENGE_LOG_SUMMERY } from "../graphql/queries";
+import Page from "../Page/page";
 const useStyles = makeStyles((theme) => ({
 	SearchContainer: {
 		display: "flex",
@@ -57,6 +58,9 @@ function ChallengeSummery({ percentages = true }) {
 		by: "email",
 		content: "",
 	});
+	const [page, setPage] = useState("");
+	const [lastIndex, setLastIndex] = useState("");
+
 	const now = new Date();
 	const prevDate = new Date();
 	prevDate.setDate(prevDate.getDate() - 7);
@@ -116,9 +120,20 @@ function ChallengeSummery({ percentages = true }) {
 		{
 			variables: {
 				percentages: percentages,
+				lastIndex: page && lastIndex ? lastIndex : null,
+				page: page && lastIndex ? page : null,
 			},
 		}
 	);
+
+	const checkPage = (item) => {
+		setPage(item);
+		if (data && JSON.parse(data.userChallengeLogSummery).data.length > 0) {
+			setLastIndex(
+				JSON.parse(JSON.parse(data.userChallengeLogSummery).lastIndex)
+			);
+		}
+	};
 
 	function handleSearch() {
 		setSearch(searchTextChange);
@@ -313,26 +328,43 @@ function ChallengeSummery({ percentages = true }) {
 	if (error) return <p>there was an error</p>;
 
 	return (
-		<div style={{ marginLeft: 20, marginTop: 20 }}>
-			<div
-				style={{
-					marginBottom: 20,
-					marginTop: 20,
-					display: "flex",
-				}}
-			>
-				<h4 style={{ marginLeft: 20 }}>
-					총 챌린저 :
-					{JSON.parse(data.userChallengeLogSummery).totalChallengers}{" "}
-				</h4>
-				<h4 style={{ marginLeft: 20 }}>
-					오늘 챌린저:
-					{JSON.parse(data.userChallengeLogSummery).todayChallenges}
-				</h4>
-			</div>
+		<Page>
+			<div style={{ marginLeft: 20, marginTop: 20 }}>
+				<div
+					style={{
+						marginBottom: 20,
+						marginTop: 20,
+						display: "flex",
+					}}
+				>
+					<h4 style={{ marginLeft: 20 }}>
+						총 챌린저 :
+						{
+							JSON.parse(data.userChallengeLogSummery)
+								.totalChallengers
+						}{" "}
+					</h4>
+					<h4 style={{ marginLeft: 20 }}>
+						오늘 챌린저:
+						{
+							JSON.parse(data.userChallengeLogSummery)
+								.todayChallenges
+						}
+					</h4>
+				</div>
 
-			<Table data={JSON.parse(data.userChallengeLogSummery).data} />
-		</div>
+				<Table data={JSON.parse(data.userChallengeLogSummery).data} />
+				<div
+					style={{
+						flexDirection: "column",
+						justifyContent: "center",
+						alignItems: "center",
+					}}
+				>
+					<Pagination checkState={checkPage} />
+				</div>
+			</div>
+		</Page>
 	);
 }
 

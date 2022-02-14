@@ -249,7 +249,7 @@ function DisplayTable({
 						</tr>
 					</thead>
 					<tbody ref={outerRef}>
-						{data.map((row) => (
+						{data.map((row, index) => (
 							<tr
 								key={row.node[fields.id]}
 								id={row.node[fields.id]}
@@ -338,7 +338,6 @@ function DisplayTable({
 									{row.node[fields.nextTotalCount].totalCount}
 								</td>
 								<td
-									key={row.node[fields.id]}
 									className={classes.tableTdTh}
 									onClick={(e) => {
 										checked
@@ -370,10 +369,7 @@ function DisplayTable({
 								</td>
 
 								{fields.media && (
-									<td
-										key={row.node[fields.id]}
-										className={classes.tableTdTh}
-									>
+									<td className={classes.tableTdTh}>
 										<Link
 											to={
 												"/botchatimages/" +
@@ -393,10 +389,7 @@ function DisplayTable({
 									</td>
 								)}
 								{fields.setting && (
-									<td
-										key={row.node[fields.id]}
-										className={classes.tableTdTh}
-									>
+									<td className={classes.tableTdTh}>
 										<Link
 											to={
 												"/setting/" +

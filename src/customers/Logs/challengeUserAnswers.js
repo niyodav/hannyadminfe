@@ -9,15 +9,21 @@ import {
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
-import { useQuery } from "@apollo/client";
-import { CHALLENGE_ETAGS_SUMMERY } from "../../graphql/queries";
+import { useQuery, useLazyQuery } from "@apollo/client";
+import {
+	CHALLENGE_ETAGS_SUMMERY,
+	TS_SCENERIO_NAMES,
+} from "../../graphql/queries";
 import { TextField, Button } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
 	SearchContainer: {
 		display: "flex",
+		flexDirection: "row",
+		marginTop: 10,
+		marginBottom: 30,
 	},
 	SearchItems: {
-		display: "flex",
+		// display: "flex",
 		flexDirection: "column",
 		alignItems: "center",
 		justifyContent: "center",
@@ -27,12 +33,14 @@ const useStyles = makeStyles((theme) => ({
 		justifyContent: "center",
 	},
 	datePickerContainer: {
-		display: "flex",
+		// display: "flex",
 		marginTop: 20,
 		marginBottom: 20,
+		alignItems: "center",
+		flexDirection: "row",
 	},
 	datePicker: {
-		flexDirection: "row",
+		// flexDirection: "row",
 	},
 	tableColumn: {
 		padding: "8px",
@@ -54,6 +62,7 @@ function ChallengeUserAnswers({ userId, status }) {
 		by: "email",
 		content: "",
 	});
+	const [scenerioId, setScenerioId] = useState("");
 	const now = new Date();
 	const prevDate = new Date();
 	prevDate.setDate(prevDate.getDate());
@@ -110,13 +119,17 @@ function ChallengeUserAnswers({ userId, status }) {
 				: "0" + String(now.getDate())),
 	});
 
-	const { loading, error, data } = useQuery(CHALLENGE_ETAGS_SUMMERY, {
+	const [getAnswers, { loading, called, data }] = useLazyQuery(
+		CHALLENGE_ETAGS_SUMMERY
+	);
+
+	const {
+		loading: scenerioLoading,
+		error: scenerioError,
+		data: scenerioData,
+	} = useQuery(TS_SCENERIO_NAMES, {
 		variables: {
 			challengeId: challengeId,
-			email: search.by === "email" ? search.content : null,
-			eTag: search.by === "etag" ? search.content : null,
-			createdAtLte: !search.content ? datePicker.to : null,
-			createdAtGte: !search.content ? datePicker.from : null,
 		},
 	});
 
@@ -145,7 +158,41 @@ function ChallengeUserAnswers({ userId, status }) {
 						))}
 				</thead>
 				<tbody>
-					{JSON.parse(data.data[0]).logs.length > 0 &&
+					{JSON.parse(data.data[0]).arr.length > 0 &&
+						JSON.parse(data.data[0]).arr.map((row, index) => {
+							return (
+								<tr key={index}>
+									<td className={classes.tableColumn}>~</td>
+									{JSON.parse(data.data[0]).etags.map(
+										(tg) => (
+											<>
+												{
+													<td
+														className={
+															classes.tableColumn
+														}
+													>
+														{row.find(
+															(item) =>
+																item.e_tag ===
+																tg
+														) === undefined
+															? "~"
+															: row.find(
+																	(item) =>
+																		item.e_tag ===
+																		tg
+															  ).value}
+													</td>
+												}
+											</>
+										)
+									)}
+								</tr>
+							);
+						})}
+
+					{/* {JSON.parse(data.data[0]).logs.length > 0 &&
 						JSON.parse(data.data[0]).logs.map((row, index) => {
 							return (
 								<tr key={row.logId} id={row.logId}>
@@ -169,14 +216,16 @@ function ChallengeUserAnswers({ userId, status }) {
 									)}
 								</tr>
 							);
-						})}
+						})} */}
 				</tbody>
 			</table>
 		</div>
 	);
 	if (loading) return <p>Loading...</p>;
-	if (error) return <p>there was an error</p>;
+	if (scenerioLoading) return <p>Loading...</p>;
+	if (scenerioError) return <p>there was an error</p>;
 
+	console.log(data);
 	return (
 		<div style={{ marginLeft: 20, marginTop: 20 }}>
 			{!userId && !status && (
@@ -340,7 +389,58 @@ function ChallengeUserAnswers({ userId, status }) {
 					</div>
 				</div>
 			)}
-			<Table data={data.challengeEtagsSummery} />
+			<div
+				style={{
+					display: "grid",
+
+					gridTemplateColumns: "100px 100px 100px 100px 100px 100px",
+					gridAutoRows: "40px",
+					gridGap: "5px",
+					position: "relative",
+					marginBottom: 20,
+				}}
+			>
+				{scenerioData.tsScenerio.edges.map((item) => (
+					<div
+						style={{
+							backgroundColor: "green",
+							alignItems: "center",
+							justifyContent: "center",
+							borderRadius: 20,
+							textAlign: "center",
+							overflow: "auto",
+							color: "white",
+							fontSize: 12,
+							fontWeight: "bold",
+						}}
+						onClick={() =>
+							getAnswers({
+								variables: {
+									// challengeId: challengeId,
+									scenerioId: item.node.scenerioId,
+									email:
+										search.by === "email"
+											? search.content
+											: null,
+									eTag:
+										search.by === "etag"
+											? search.content
+											: null,
+									createdAtLte: !search.content
+										? datePicker.to
+										: null,
+									createdAtGte: !search.content
+										? datePicker.from
+										: null,
+								},
+							})
+						}
+					>
+						{item.node.name}
+					</div>
+				))}
+			</div>
+			{data && <Table data={data.challengeEtagsSummery} />}
 		</div>
 	);
 }

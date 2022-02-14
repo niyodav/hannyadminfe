@@ -1,22 +1,6 @@
-import {
-	Button,
-	Drawer,
-	Typography,
-	List,
-	ListItem,
-	ListItemText,
-	Container,
-	Paper,
-} from "@material-ui/core";
-import React, { useEffect, useState, useContext } from "react";
-import {
-	BrowserRouter as Router,
-	Switch,
-	Route,
-	Link,
-	useHistory,
-	useLocation,
-} from "react-router-dom";
+import { Drawer, List, ListItem, ListItemText } from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
 import "./App.css";
@@ -54,23 +38,24 @@ import CustomerDetails from "./customers/customerDetails";
 import ChallengeSummery from "./challengeManagement/challengeSummery";
 import UserChallengeLogSummery from "./challengeManagement/userChallengeLogSummery";
 import ChallengeUserAnswers from "./customers/Logs/challengeUserAnswers";
+import { CursorContextProvider } from "./contexts/cursorContext";
 
 const client = new ApolloClient({
 	uri: API_BASE_URL + "graphql/",
 	cache: new InMemoryCache(),
 });
 
-const useStateWithLocalStorage = (localStorageKey) => {
-	const [value, setValue] = React.useState(
-		localStorage.getItem(localStorageKey) || ""
-	);
+// const useStateWithLocalStorage = (localStorageKey) => {
+// 	const [value, setValue] = React.useState(
+// 		localStorage.getItem(localStorageKey) || ""
+// 	);
 
-	React.useEffect(() => {
-		localStorage.setItem(localStorageKey, value);
-	}, [value]);
+// 	useEffect(() => {
+// 		localStorage.setItem(localStorageKey, value);
+// 	}, [value]);
 
-	return [value, setValue];
-};
+// 	return [value, setValue];
+// };
 
 const useStyles = makeStyles((theme) => ({
 	drawerPaper: {
@@ -95,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App() {
-	const [value, setValue] = useStateWithLocalStorage("myValueInLocalStorage");
+	// const [value, setValue] = useStateWithLocalStorage("myValueInLocalStorage");
 
 	const [clicked, setClicked] = useState(false);
 
@@ -103,91 +88,93 @@ function App() {
 
 	return (
 		<ApolloProvider client={client}>
-			<TableSortProvider>
-				<CategoryProvider>
-					<UpdateContextProvider>
-						<DeleteIdsContextProvider>
-							<SelectedFeatureProvider>
-								<SelectedBlockContextProvider>
-									<CreatedtextContextProvider>
-										<LocationContextProvider>
-											<SelectedCategoryContextProvider>
-												<CreatedFileContextProvider>
-													<SelectedMenuContextProvider>
-														<Router>
-															{/* style={{background:"red",width:"100%"}} */}
-															{/* <div className={classes.root}>  */}
-
-															<div
-																className={
-																	classes.root
-																}
-																style={{
-																	height: 1000,
-																	background:
-																		"#f3f3f3",
-																	overflow:
-																		"scroll",
-																}}
-															>
-																<Drawer
-																	variant="persistent"
-																	open={true}
-																	classes={{
-																		paper:
-																			classes.drawerPaper,
-																	}}
+			<CursorContextProvider>
+				<TableSortProvider>
+					<CategoryProvider>
+						<UpdateContextProvider>
+							<DeleteIdsContextProvider>
+								<SelectedFeatureProvider>
+									<SelectedBlockContextProvider>
+										<CreatedtextContextProvider>
+											<LocationContextProvider>
+												<SelectedCategoryContextProvider>
+													<CreatedFileContextProvider>
+														<SelectedMenuContextProvider>
+															<Router>
+																<div
 																	className={
-																		classes.drawerPaper
+																		classes.root
 																	}
+																	style={{
+																		height: 1000,
+																		background:
+																			"#f3f3f3",
+																		overflow:
+																			"scroll",
+																	}}
 																>
-																	<Link
-																		to="/"
+																	<Drawer
+																		variant="persistent"
+																		open={
+																			true
+																		}
+																		classes={{
+																			paper:
+																				classes.drawerPaper,
+																		}}
 																		className={
-																			classes.link
-																		}
-																		button
-																		onClick={() =>
-																			setClicked(
-																				"banner"
-																			)
-																		}
-																		style={
-																			clicked ===
-																			"banner"
-																				? {
-																						color:
-																							"#ff8000",
-																				  }
-																				: null
-																		}
-																	>
-																		<img
-																			src={
-																				"https://hanny-uploads.s3.amazonaws.com/USER/UPLOADS/hannybanner1.png"
-																			}
-																			alt="decrement"
-																			style={{
-																				width:
-																					"auto",
-																				height: 60,
-																			}}
-																		/>
-																	</Link>
-
-																	<List
-																		className={
-																			classes.drawerList
+																			classes.drawerPaper
 																		}
 																	>
 																		<Link
+																			to="/"
+																			className={
+																				classes.link
+																			}
+																			button={
+																				true
+																			}
+																			onClick={() =>
+																				setClicked(
+																					"banner"
+																				)
+																			}
+																			style={
+																				clicked ===
+																				"banner"
+																					? {
+																							color:
+																								"#ff8000",
+																					  }
+																					: null
+																			}
+																		>
+																			<img
+																				src={
+																					"https://hanny-uploads.s3.amazonaws.com/USER/UPLOADS/hannybanner1.png"
+																				}
+																				alt="decrement"
+																				style={{
+																					width:
+																						"auto",
+																					height: 60,
+																				}}
+																			/>
+																		</Link>
+
+																		<List
+																			className={
+																				classes.drawerList
+																			}
+																		>
+																			{/* <Link
 																			to="/registeruser"
 																			className={
 																				classes.link
 																			}
 																		>
 																			<ListItem
-																				button
+																					button={true}
 																				onClick={() =>
 																					setClicked(
 																						"registeruser"
@@ -209,380 +196,316 @@ function App() {
 																					}
 																				/>
 																			</ListItem>
-																		</Link>
-																		<Link
-																			to="/dashboard"
-																			className={
-																				classes.link
-																			}
-																		>
-																			<ListItem
-																				button
-																				onClick={() =>
-																					setClicked(
-																						"dashboard"
-																					)
-																				}
-																				style={
-																					clicked ===
-																					"dashboard"
-																						? {
-																								color:
-																									"#ff8000",
-																						  }
-																						: null
-																				}
-																			>
-																				<ListItemText
-																					primary={
-																						"대시보드"
-																					}
-																				/>
-																			</ListItem>
-																		</Link>
-																		<Link
-																			to="/"
-																			className={
-																				classes.link
-																			}
-																		>
-																			<ListItem
-																				button
-																				onClick={() =>
-																					setClicked(
-																						"home"
-																					)
-																				}
-																				style={
-																					clicked ===
-																					"home"
-																						? {
-																								color:
-																									"#ff8000",
-																						  }
-																						: null
-																				}
-																			>
-																				{/* <img
-																					src={
-																						"https://hanny-uploads.s3.amazonaws.com/USER/UPLOADS/%E1%84%83%E1%85%A2%E1%84%92%E1%85%AA%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5.png"
-																					}
-																					alt="increment"
-																					style={{
-																						width: 20,
-																						height: 20,
-																						marginRight: 10,
-																					}}
-																				/> */}
-																				<ListItemText
-																					primary={
-																						"대화관리"
-																					}
-																				/>
-																			</ListItem>
-																		</Link>
-																		<Link
-																			to="/customers"
-																			className={
-																				classes.link
-																			}
-																		>
-																			<ListItem
-																				button
-																				onClick={() =>
-																					setClicked(
-																						"customers"
-																					)
-																				}
-																				style={
-																					clicked ===
-																					"customers"
-																						? {
-																								color:
-																									"#ff8000",
-																						  }
-																						: null
-																				}
-																			>
-																				{/* <img
-																					src={
-																						"https://hanny-uploads.s3.amazonaws.com/USER/UPLOADS/HC%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5_4ne7sV4.png"
-																					}
-																					alt="decrement"
-																					style={{
-																						width: 20,
-																						height: 20,
-																						marginRight: 10,
-																					}}
-																				/> */}
-
-																				<ListItemText
-																					primary={
-																						"친구관리"
-																					}
-																				/>
-																			</ListItem>
-																		</Link>
-																		<Link
-																			to="/useranswers"
-																			className={
-																				classes.link
-																			}
-																		>
-																			<ListItem
-																				button
-																				onClick={() =>
-																					setClicked(
-																						"useranswers"
-																					)
-																				}
-																				style={
-																					clicked ===
-																					"useranswers"
-																						? {
-																								color:
-																									"#ff8000",
-																						  }
-																						: null
-																				}
-																			>
-																				{/* <img
-																					src={
-																						"https://hanny-uploads.s3.amazonaws.com/USER/UPLOADS/%E1%84%8E%E1%85%B5%E1%86%AB%E1%84%80%E1%85%AE%E1%84%80%E1%85%AA%E1%86%AB%E1%84%85%E1%85%B5.png"
-																					}
-																					alt="increment"
-																					style={{
-																						width: 20,
-																						height: 20,
-																						marginRight: 10,
-																					}}
-																				/> */}
-																				<ListItemText
-																					primary={
-																						"답변 모니터링"
-																					}
-																				/>
-																			</ListItem>
-																		</Link>
-
-																		<Link
-																			to="/challenge-stats"
-																			className={
-																				classes.link
-																			}
-																		>
-																			<ListItem
-																				button
-																				onClick={() =>
-																					setClicked(
-																						"challenge-stats"
-																					)
-																				}
-																				style={
-																					clicked ===
-																					"challenge-stats"
-																						? {
-																								color:
-																									"#ff8000",
-																						  }
-																						: null
-																				}
-																			>
-																				{/* <img src={"https://hanny-uploads.s3.amazonaws.com/USER/UPLOADS/%E1%84%83%E1%85%A2%E1%84%89%E1%85%B5%E1%84%87%E1%85%A9%E1%84%83%E1%85%B3_PmThK5Y.png"} alt="increment" style={{width:20,height:20,marginRight:10}}/>     */}
-
-																				<ListItemText
-																					primary={
-																						"챌린지 통계"
-																					}
-																				/>
-																			</ListItem>
-																		</Link>
-																		{/* <Link
-																			to="/controlcenter"
-																			className={
-																				classes.link
-																			}
-																		>
-																			<ListItem
-																				button
-																				onClick={() =>
-																					setClicked(
-																						"controlcenter"
-																					)
-																				}
-																				style={
-																					clicked ===
-																					"controlcenter"
-																						? {
-																								color:
-																									"#ff8000",
-																						  }
-																						: null
-																				}
-																			>
-
-																				<ListItemText
-																					primary={
-																						"App control center"
-																					}
-																				/>
-																			</ListItem>
 																		</Link> */}
-																	</List>
-																</Drawer>
-																<div
-																	className={
-																		classes.Main
-																	}
-																>
-																	<Switch>
-																		<Route
-																			exact
-																			path="/"
-																		>
-																			<DisplayChallenges />
-																			{/* <div>
+																			<Link
+																				to="/dashboard"
+																				className={
+																					classes.link
+																				}
+																			>
+																				<ListItem
+																					button={
+																						true
+																					}
+																					onClick={() =>
+																						setClicked(
+																							"dashboard"
+																						)
+																					}
+																					style={
+																						clicked ===
+																						"dashboard"
+																							? {
+																									color:
+																										"#ff8000",
+																							  }
+																							: null
+																					}
+																				>
+																					<ListItemText
+																						primary={
+																							"대시보드"
+																						}
+																					/>
+																				</ListItem>
+																			</Link>
+																			<Link
+																				to="/"
+																				className={
+																					classes.link
+																				}
+																			>
+																				<ListItem
+																					button={
+																						true
+																					}
+																					onClick={() =>
+																						setClicked(
+																							"home"
+																						)
+																					}
+																					style={
+																						clicked ===
+																						"home"
+																							? {
+																									color:
+																										"#ff8000",
+																							  }
+																							: null
+																					}
+																				>
+																					<ListItemText
+																						primary={
+																							"대화관리"
+																						}
+																					/>
+																				</ListItem>
+																			</Link>
+																			<Link
+																				to="/customers"
+																				className={
+																					classes.link
+																				}
+																			>
+																				<ListItem
+																					button={
+																						true
+																					}
+																					onClick={() =>
+																						setClicked(
+																							"customers"
+																						)
+																					}
+																					style={
+																						clicked ===
+																						"customers"
+																							? {
+																									color:
+																										"#ff8000",
+																							  }
+																							: null
+																					}
+																				>
+																					<ListItemText
+																						primary={
+																							"친구관리"
+																						}
+																					/>
+																				</ListItem>
+																			</Link>
+																			<Link
+																				to="/useranswers"
+																				className={
+																					classes.link
+																				}
+																			>
+																				<ListItem
+																					button={
+																						true
+																					}
+																					onClick={() =>
+																						setClicked(
+																							"useranswers"
+																						)
+																					}
+																					style={
+																						clicked ===
+																						"useranswers"
+																							? {
+																									color:
+																										"#ff8000",
+																							  }
+																							: null
+																					}
+																				>
+																					<ListItemText
+																						primary={
+																							"답변 모니터링"
+																						}
+																					/>
+																				</ListItem>
+																			</Link>
 
-																				{value ? (
-																					<DisplayChallenges />
-																				) : (
-																					<Login />
-																				)}
-																			</div> */}
-																		</Route>
-																		<Route
-																			exact
-																			path="/login"
-																		>
-																			<Login />
-																		</Route>
+																			<Link
+																				to="/challenge-stats"
+																				className={
+																					classes.link
+																				}
+																			>
+																				<ListItem
+																					button={
+																						true
+																					}
+																					onClick={() =>
+																						setClicked(
+																							"challenge-stats"
+																						)
+																					}
+																					style={
+																						clicked ===
+																						"challenge-stats"
+																							? {
+																									color:
+																										"#ff8000",
+																							  }
+																							: null
+																					}
+																				>
+																					<ListItemText
+																						primary={
+																							"챌린지 통계"
+																						}
+																					/>
+																				</ListItem>
+																			</Link>
+																		</List>
+																	</Drawer>
+																	<div
+																		className={
+																			classes.Main
+																		}
+																	>
+																		<Switch>
+																			<Route
+																				exact
+																				path="/"
+																			>
+																				<DisplayChallenges />
+																			</Route>
+																			<Route
+																				exact
+																				path="/login"
+																			>
+																				<Login />
+																			</Route>
 
-																		<Route
-																			exact
-																			path="/dashboard"
-																		>
-																			<Dashboard />
-																		</Route>
-																		<Route
+																			<Route
+																				exact
+																				path="/dashboard"
+																			>
+																				<Dashboard />
+																			</Route>
+																			{/* <Route
 																			exact
 																			path="/registeruser"
 																		>
 																			<UserRegistration />
-																		</Route>
-																		<Route
-																			exact
-																			path="/customers"
-																		>
-																			<CustomerMonitoring />
-																		</Route>
-																		<Route
-																			exact
-																			path="/useranswers"
-																		>
-																			<ChallengeSummery
-																				percentages={
-																					false
-																				}
-																			/>
-																		</Route>
+																		</Route> */}
+																			<Route
+																				exact
+																				path="/customers"
+																			>
+																				<CustomerMonitoring />
+																			</Route>
+																			<Route
+																				exact
+																				path="/useranswers"
+																			>
+																				<ChallengeSummery
+																					percentages={
+																						false
+																					}
+																				/>
+																			</Route>
 
-																		<Route
-																			exact
-																			path="/challenge-group/:fk"
-																		>
-																			<DisplayChallengesGroups />
-																		</Route>
-																		<Route
-																			exact
-																			path="/challenge/:fk"
-																		>
-																			<DisplayChallenges />
-																		</Route>
-																		<Route
-																			exact
-																			path="/scenerio/:fk"
-																		>
-																			<DisplayScenerios />
-																		</Route>
-																		<Route
-																			exact
-																			path="/block/:fk"
-																		>
-																			<DisplayBlocks />
-																		</Route>
-																		<Route
-																			exact
-																			path="/chat/:fk"
-																		>
-																			<DisplayBotChat />
-																		</Route>
+																			<Route
+																				exact
+																				path="/challenge-group/:fk"
+																			>
+																				<DisplayChallengesGroups />
+																			</Route>
+																			<Route
+																				exact
+																				path="/challenge/:fk"
+																			>
+																				<DisplayChallenges />
+																			</Route>
+																			<Route
+																				exact
+																				path="/scenerio/:fk"
+																			>
+																				<DisplayScenerios />
+																			</Route>
+																			<Route
+																				exact
+																				path="/block/:fk"
+																			>
+																				<DisplayBlocks />
+																			</Route>
+																			<Route
+																				exact
+																				path="/chat/:fk"
+																			>
+																				<DisplayBotChat />
+																			</Route>
 
-																		<Route
-																			exact
-																			path="/setting/:challengeId"
-																		>
-																			<ChallengeSettings />
-																		</Route>
+																			<Route
+																				exact
+																				path="/setting/:challengeId"
+																			>
+																				<ChallengeSettings />
+																			</Route>
 
-																		<Route
-																			exact
-																			path="/customerdetails/:userId"
-																		>
-																			<CustomerDetails />
-																		</Route>
-																		<Route
-																			exact
-																			path="/challengeuseranswers/:challengeId"
-																		>
-																			<ChallengeUserAnswers />
-																		</Route>
+																			<Route
+																				exact
+																				path="/customerdetails/:userId"
+																			>
+																				<CustomerDetails />
+																			</Route>
+																			<Route
+																				exact
+																				path="/challengeuseranswers/:challengeId"
+																			>
+																				<ChallengeUserAnswers />
+																			</Route>
 
-																		<Route
-																			exact
-																			path="/botchatimages/:challengeId"
-																		>
-																			<UploadBotChatMedia />
-																		</Route>
+																			<Route
+																				exact
+																				path="/botchatimages/:challengeId"
+																			>
+																				<UploadBotChatMedia />
+																			</Route>
 
-																		<Route
-																			exact
-																			path="/challenge-stats"
-																		>
-																			<ChallengeSummery />
-																		</Route>
+																			<Route
+																				exact
+																				path="/challenge-stats"
+																			>
+																				<ChallengeSummery />
+																			</Route>
 
-																		<Route
-																			exact
-																			path="/userchallengelogstats/:challengeId?/:challengers?/:openpercentage?/:completedpercentage?"
-																		>
-																			<UserChallengeLogSummery
-																				percentages={
-																					true
-																				}
-																			/>
-																		</Route>
+																			<Route
+																				exact
+																				path="/userchallengelogstats/:challengeId?/:challengers?/:openpercentage?/:completedpercentage?"
+																			>
+																				<UserChallengeLogSummery
+																					percentages={
+																						true
+																					}
+																				/>
+																			</Route>
 
-																		{/* <Route
+																			{/* <Route
 																			exact
 																			path="/controlcenter"
 																		>
 																			<ControlApp />
 																		</Route> */}
-																	</Switch>
+																		</Switch>
+																	</div>
 																</div>
-															</div>
-														</Router>
-													</SelectedMenuContextProvider>
-												</CreatedFileContextProvider>
-											</SelectedCategoryContextProvider>
-										</LocationContextProvider>
-									</CreatedtextContextProvider>
-								</SelectedBlockContextProvider>
-							</SelectedFeatureProvider>
-						</DeleteIdsContextProvider>
-					</UpdateContextProvider>
-				</CategoryProvider>
-			</TableSortProvider>
+															</Router>
+														</SelectedMenuContextProvider>
+													</CreatedFileContextProvider>
+												</SelectedCategoryContextProvider>
+											</LocationContextProvider>
+										</CreatedtextContextProvider>
+									</SelectedBlockContextProvider>
+								</SelectedFeatureProvider>
+							</DeleteIdsContextProvider>
+						</UpdateContextProvider>
+					</CategoryProvider>
+				</TableSortProvider>
+			</CursorContextProvider>
 		</ApolloProvider>
 	);
 }

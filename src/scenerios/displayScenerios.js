@@ -19,6 +19,8 @@ import { LocationContext } from "../contexts/locationContext";
 import { SelectedCategoryContext } from "../contexts/selectedCategoryContext";
 import { SelectedMenuContext } from "../contexts/selectedMenuContext";
 import ImportChallenge from "../features/importChallenge";
+import Pagination from "../components/Pagination";
+import { CursorContext } from "../contexts/cursorContext";
 
 const useStyles = makeStyles((theme) => ({
 	upperLinks: {
@@ -52,11 +54,26 @@ function DisplayScenerios({ search }) {
 
 	const [newCategory, setNewCategory] = useContext(CategoryContext);
 	const [selectedMenu, setSelectedMenu] = useContext(SelectedMenuContext);
+	const [cursor, setCursor] = useContext(CursorContext);
+
+	const [page, setPage] = useState("");
+
+	const checkPage = (item) => {
+		if (data && data.tsScenerio.pageInfo) {
+			setCursor({
+				scenerio: {
+					startCursor: data.tsScenerio.pageInfo.startCursor,
+					endCursor: data.tsScenerio.pageInfo.endCursor,
+				},
+			});
+		}
+		setPage(item);
+	};
 
 	useEffect(() => {
 		setLocationContext({ ...locationContext, scenerio: location.pathname });
 
-		refetch();
+		// refetch();
 		return () => {
 			setNewCategory({
 				...newCategory,
@@ -66,9 +83,6 @@ function DisplayScenerios({ search }) {
 				...updateCategory,
 				scenerio: false,
 			});
-			// setSelectedMenu({
-			//     ...selectedMenu,scenerio:{id:false,action:false}
-			// });
 		};
 	}, [
 		newCategory.scenerio,
@@ -76,8 +90,23 @@ function DisplayScenerios({ search }) {
 		selectedMenu.scenerio.id,
 	]);
 	const { loading, error, data, refetch } = useQuery(TS_SCENERIO, {
-		variables: { challengeId: fk, orderBy: sortBy.sortBy },
-		pollInterval: 600000,
+		// variables: { challengeId: fk, orderBy: sortBy.sortBy },
+
+		variables: {
+			challengeId: fk,
+			orderBy: "idx",
+			first: !page ? 10 : page === "next" ? 10 : null,
+			last: page === "prev" ? 10 : null,
+			after:
+				page === "next" && String(cursor.scenerio)
+					? String(cursor.scenerio.endCursor)
+					: null,
+			before:
+				page === "prev" && String(cursor.scenerio)
+					? String(cursor.scenerio.startCursor)
+					: null,
+		},
+		// pollInterval: 600000,
 	});
 	let prevChallengeGroupName = selectedCategoryContext.challengeGroup
 		? selectedCategoryContext.challengeGroup
@@ -177,6 +206,16 @@ function DisplayScenerios({ search }) {
 					contextKey={"scenerio"}
 				/>
 				<CreateScenerio scenerioFk={fk} />
+			</div>
+
+			<div
+				style={{
+					flexDirection: "column",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<Pagination checkState={checkPage} />
 			</div>
 
 			{updateCategory.scenerio && (

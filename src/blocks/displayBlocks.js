@@ -23,9 +23,11 @@ import DeleteBlock from "./deleteBlock";
 const useStyles = makeStyles((theme) => ({
 	mainContainer: {
 		display: "flex",
-		flex: "1 1 100%",
+		flexDirection: "row",
 		overflow: "auto",
-		position: "relative",
+		// flex: "1 1 100%",
+
+		// position: "relative",
 		// gridTemplateColumns: "100px 100px",
 	},
 	blockContainer: {
@@ -35,7 +37,6 @@ const useStyles = makeStyles((theme) => ({
 
 		gridTemplateColumns: "100px 100px 100px",
 		gridAutoRows: "40px",
-
 		gridGap: "5px",
 		// gridColumnGap: "10px",
 		//  gridRowGap: "2px",

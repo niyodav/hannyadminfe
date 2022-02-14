@@ -2,50 +2,65 @@ import React, { useState, useEffect } from "react";
 import "./login.css";
 import checked from "../assets/images/icon_checked.png";
 import unchecked from "../assets/images/icon_unchecked.png";
-// import apis from '../../../apis';
 import Cookies from "universal-cookie";
 import { useHistory } from "react-router";
-// import { useStores } from '../../../stores';
+import { useMutation } from "@apollo/client";
+import { TOKEN_AUTH, VERIFY_TOKEN } from "../graphql/mutations";
 
 const Login = () => {
 	const history = useHistory();
-	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [saveChecked, setSaveChecked] = useState(false);
-	// const {userStore} = useStores();
+	const [loged, setLoged] = useState(false);
+	const cookies = new Cookies();
 
 	useEffect(() => {
-		const cookies = new Cookies();
-		const savedEmail = cookies.get("loginEmail");
-		if (savedEmail) {
-			setEmail(savedEmail);
+		const savedUsername = cookies.get("loginusername");
+		if (savedUsername) {
+			setUsername(savedUsername);
 			setSaveChecked(true);
 		}
 	}, []);
+
+	const [verifyToken, { loading, data: verifyData }] = useMutation(
+		VERIFY_TOKEN
+	);
+
+	const [tokenAuth, { data }] = useMutation(TOKEN_AUTH);
 	const toggleCheck = () => {
 		setSaveChecked(!saveChecked);
 	};
 
 	const onLogin = async () => {
-		if (email.length === 0) {
-			alert("이메일 아이디를 입력하세요");
+		let token = "";
+		if (data) {
+			token = data.tokenAuth.token;
+			cookies.set("loginToken", token);
+		}
+
+		if (username.length === 0) {
+			alert(" 아이디를 입력하세요");
 			return;
 		}
 		if (password.length === 0) {
 			alert("비밀번호를 입력하세요");
 			return;
 		}
-		history.replace("/");
-		// const res = await apis.userApi.login({email, password});
-		// if(res.status === 200) {
-		//     const cookies = new Cookies();
-		//     if(saveChecked) {
-		//         cookies.set('loginEmail', email);
-		//     } else {
-		//         cookies.remove('loginEmail');
-		//     }
-		//     // userStore.fetchMyInfo();
-		//     history.replace('/admin');
+		if (password && username) {
+			tokenAuth({
+				variables: { username: username, password: password },
+			});
+			if (token) {
+				history.replace("/");
+				// verifyToken({
+				// 	variables: { token: token },
+				// });
+			}
+		}
+
+		// if (verifyData) {
+		// 	history.replace("/");
 		// }
 	};
 
@@ -60,21 +75,25 @@ const Login = () => {
 			<div className="login-white-box">
 				<div className="login-logo"></div>
 				<span className="login-title">관리자 로그인</span>
-				<input
-					className="login-id-input"
-					type="email"
-					placeholder="이메일 아이디"
-					value={email}
-					onChange={(e) => setEmail(e.target.value)}
-				/>
-				<input
-					className="login-pw-input"
-					type="password"
-					placeholder="비밀번호"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-					onKeyPress={onKeyPress}
-				/>
+				<div>
+					<input
+						className="login-id-input"
+						type="username"
+						placeholder="아이디"
+						value={username}
+						onChange={(e) => setUsername(e.target.value)}
+					/>
+				</div>
+				<div>
+					<input
+						className="login-pw-input"
+						type="password"
+						placeholder="비밀번호"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						onKeyPress={onKeyPress}
+					/>
+				</div>
 				<div className="login-save-row">
 					<img
 						className="login-check-box"

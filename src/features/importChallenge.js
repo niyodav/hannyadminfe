@@ -111,9 +111,9 @@ function ImportChallenge({ addFile, category, uploadType, challengeId }) {
 						style={{ display: "none" }}
 						onChange={handleFiles}
 					/>
-					<label for="upload" style={{ cursor: "pointer" }}>
-						Import Challenge
-					</label>
+					{/* <label for="upload" style={{ cursor: "pointer" }}> */}
+					Import Challenge
+					{/* </label> */}
 					<div></div>
 				</div>
 			</form>

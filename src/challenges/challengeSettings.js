@@ -43,6 +43,9 @@ const useStyles = makeStyles((theme) => ({
 	challengeNameTitle: {
 		margin: 10,
 	},
+	submit: {
+		width: 100,
+	},
 }));
 function ChallengeSettings() {
 	const classes = useStyles();
@@ -615,7 +618,7 @@ function ChallengeSettings() {
 						</div>
 					</div>
 
-					<div>
+					<div className={classes.submit}>
 						<Button
 							variant="contained"
 							color="primary"
@@ -851,7 +854,7 @@ function ChallengeSettings() {
 							}
 						/>
 					</div>
-					<div>
+					<div className={classes.submit}>
 						<Button
 							variant="contained"
 							color="primary"
@@ -1078,7 +1081,7 @@ function ChallengeSettings() {
 							</div>
 						</div>
 					</div>
-					<div>
+					<div className={classes.submit}>
 						<Button
 							variant="contained"
 							color="primary"
