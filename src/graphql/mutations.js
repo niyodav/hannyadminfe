@@ -188,9 +188,9 @@ export const UPDATE_CHALLENGE_BASIC_SETTING = gql`
 		$challengeId: String!
 		$name: String
 		$tags: [String]
-		$nextDay: Boolean
+		$nextDay: Int
 		$startOn: Int
-		$showOnScreen: Boolean
+		$showOnScreen: Int
 		$scheduleDays: [Int]
 	) {
 		updateChallenge(
@@ -420,6 +420,14 @@ export const DELETE_RESPONSES = gql`
 			response {
 				response
 			}
+		}
+	}
+`;
+
+export const DISABLE_ACCESS_CODE = gql`
+	mutation($codeNumbers: [String], $inactive: Boolean) {
+		disableAccessCode(codeNumbers: $codeNumbers, inactive: $inactive) {
+			msg
 		}
 	}
 `;

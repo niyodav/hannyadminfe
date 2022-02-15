@@ -680,8 +680,8 @@ export const USER_CHALLENGE_LOG_SUMMERY = gql`
 	}
 `;
 export const CHALLENGE_ACCESSCODE = gql`
-	query($challengeId: String) {
-		allAccessCodes(challengeId: $challengeId) {
+	query($challengeId: String, $inactive: Boolean) {
+		allAccessCodes(challengeId: $challengeId, inactive: $inactive) {
 			edges {
 				node {
 					codeNumber

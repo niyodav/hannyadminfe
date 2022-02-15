@@ -1,0 +1,55 @@
+.date-box-container {
+	flex-direction: row;
+}
+
+.date-box-column {
+	position: relative;
+}
+
+.date-box-date {
+	flex-direction: row;
+	width: 140px;
+	height: 40px;
+	align-items: center;
+	justify-content: space-between;
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+	background-color: white;
+	margin: 0 3px 0 0;
+}
+
+.date-box-date-small {
+	flex-direction: row;
+	width: 140px;
+	height: 32px;
+	align-items: center;
+	justify-content: space-between;
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+	background-color: white;
+	margin: 0 3px 0 0;
+}
+
+.date-box-input {
+	width: 80px;
+	font-size: 16px;
+	color: #181818;
+	margin: 0 0 0 13px;
+}
+
+.date-box-icon {
+	width: 18px;
+	height: 18px;
+	object-fit: contain;
+	margin: 0 14px 0 0;
+	cursor: pointer;
+}
+
+.date-box-calendar-container {
+	position: absolute;
+	top: 44px;
+	width: 276px;
+	height: auto;
+	background-color: white;
+	z-index: 100;
+}

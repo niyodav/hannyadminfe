@@ -1,5 +1,5 @@
 import { Drawer, List, ListItem, ListItemText } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -27,7 +27,7 @@ import { CreatedFileContextProvider } from "./contexts/createdFileContext";
 import { SelectedMenuContextProvider } from "./contexts/selectedMenuContext";
 // import Login from "./components/login";
 import Login from "./login/login";
-import UserRegistration from "./Register/registerUser";
+// import UserRegistration from "./Register/registerUser";
 
 import ChallengeSettings from "./challenges/challengeSettings";
 import Dashboard from "./dashboards/dashboard";
@@ -44,18 +44,6 @@ const client = new ApolloClient({
 	uri: API_BASE_URL + "graphql/",
 	cache: new InMemoryCache(),
 });
-
-// const useStateWithLocalStorage = (localStorageKey) => {
-// 	const [value, setValue] = React.useState(
-// 		localStorage.getItem(localStorageKey) || ""
-// 	);
-
-// 	useEffect(() => {
-// 		localStorage.setItem(localStorageKey, value);
-// 	}, [value]);
-
-// 	return [value, setValue];
-// };
 
 const useStyles = makeStyles((theme) => ({
 	drawerPaper: {

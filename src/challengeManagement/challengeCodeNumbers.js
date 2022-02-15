@@ -1,20 +1,11 @@
 import React from "react";
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useCallback } from "react";
+import checked from "../assets/images/icon_checked.png";
+import unchecked from "../assets/images/icon_unchecked.png";
 import { makeStyles } from "@material-ui/core/styles";
-import { useParams, Link } from "react-router-dom";
-import {
-	DatePicker,
-	TimePicker,
-	DateTimePicker,
-	MuiPickersUtilsProvider,
-	KeyboardDatePicker,
-} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-
-import { useQuery } from "@apollo/client";
+import { DISABLE_ACCESS_CODE } from "../graphql/mutations";
+import { useQuery, useMutation } from "@apollo/client";
 import { CHALLENGE_ACCESSCODE } from "../graphql/queries";
-import { TextField, Button, MenuItem } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
 	SearchContainer: {
 		display: "flex",
@@ -53,18 +44,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 function ChallengeAccessCodes({ challengeId }) {
 	const classes = useStyles();
-	const [search, setSearch] = useState({
-		by: "email",
-		content: "",
-	});
+
+	const [deleteList, setDeleteList] = useState([]);
+
 	const now = new Date();
 	const prevDate = new Date();
 	prevDate.setDate(prevDate.getDate() - 7);
 
-	const [searchTextChange, setSearchTextChange] = useState({
-		by: "email",
-		content: "",
-	});
 	const [datePickerChange, setDatePickerChange] = useState({
 		from:
 			prevDate.getFullYear() +
@@ -111,23 +97,31 @@ function ChallengeAccessCodes({ challengeId }) {
 				: "0" + String(now.getDate())),
 	});
 
-	const { loading, error, data } = useQuery(CHALLENGE_ACCESSCODE, {
+	const { loading, error, data, refetch } = useQuery(CHALLENGE_ACCESSCODE, {
 		variables: {
 			challengeId: challengeId,
+			inactive: false,
 		},
 	});
 
-	function handleSearch() {
-		setSearch(searchTextChange);
-		if (!search.content) {
-			setDatePicker(datePickerChange);
-		}
-	}
+	const [disableAccessCode] = useMutation(DISABLE_ACCESS_CODE);
+
+	const onDeleteCheckChange = useCallback(
+		(code) => {
+			if (deleteList.length > 0) {
+				const items = deleteList.filter((item) => item !== code);
+				setDeleteList(items);
+			} else {
+				setDeleteList([...deleteList, code]);
+			}
+		},
+		[deleteList, setDeleteList]
+	);
 
 	const Table = (data) => (
 		<table>
 			<thead>
-				<th className={classes.tableColumn}></th>
+				<th className={classes.tableColumn}>선택</th>
 				<th className={classes.tableColumn}>코드 번호</th>
 				<th className={classes.tableColumn}>유효기간</th>
 				<th className={classes.tableColumn}>인원수</th>
@@ -138,7 +132,23 @@ function ChallengeAccessCodes({ challengeId }) {
 				{data.data.map((row) => {
 					return (
 						<tr key={row.node.codeNumber} id={row.node.codeNumber}>
-							<td className={classes.tableColumn}></td>
+							<td className={classes.tableColumn}>
+								<img
+									style={{ width: 20, height: 20 }}
+									src={
+										deleteList.find(
+											(element) =>
+												element === row.node.codeNumber
+										) !== undefined
+											? checked
+											: unchecked
+									}
+									alt=""
+									onClick={() =>
+										onDeleteCheckChange(row.node.codeNumber)
+									}
+								/>
+							</td>
 							<td className={classes.tableColumn}>
 								{row.node.codeNumber}
 							</td>
@@ -171,12 +181,36 @@ function ChallengeAccessCodes({ challengeId }) {
 	if (loading) return <p>Loading...</p>;
 	if (error) return <p>there was an error</p>;
 
-	console.log(challengeId);
-	console.log(data);
-
 	return (
 		<div style={{ marginLeft: 20, marginTop: 20 }}>
 			<Table data={data.allAccessCodes.edges} />
+			<div
+				style={{
+					alignItems: "center",
+					margin: "20px 0 20px 0",
+				}}
+			>
+				<button
+					style={{
+						background: "green",
+						width: 100,
+						padding: 10,
+						color: "white",
+						fontWeight: "bold",
+					}}
+					onClick={() => {
+						disableAccessCode({
+							variables: {
+								codeNumbers: deleteList,
+								inactive: true,
+							},
+						});
+						refetch();
+					}}
+				>
+					코드 삭제하기
+				</button>
+			</div>
 		</div>
 	);
 }

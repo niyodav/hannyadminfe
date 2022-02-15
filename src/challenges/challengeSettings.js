@@ -2,21 +2,20 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { TextField, Button } from "@material-ui/core";
 import {
-	DatePicker,
-	TimePicker,
-	DateTimePicker,
 	MuiPickersUtilsProvider,
 	KeyboardDatePicker,
+	DatePicker,
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import moment from "moment";
 
-import { useParams, useLocation, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { API_BASE_URL } from "../globalConstants";
 import UploadMedia from "../components/uploadMedia";
 import { useQuery, useMutation } from "@apollo/client";
 import { ONE_CHALLENGES } from "../graphql/queries";
-import { useState, useRef, useContext, useEffect, Fragment } from "react";
+import { useState } from "react";
 import {
 	UPDATE_CHALLENGE_BASIC_SETTING,
 	UPDATE_CHALLENGE_MAINPAGE_SETTING,
@@ -25,10 +24,13 @@ import {
 	UPDATE_CHALLENGELIST,
 } from "../graphql/mutations";
 import ChallengeAccessCodes from "../challengeManagement/challengeCodeNumbers";
-
+import DateBox from "../components/DateBox/DateBox";
 const useStyles = makeStyles((theme) => ({
 	container: {
-		marginTop: 20,
+		display: "flex",
+		padding: "20px 0 20px 0",
+		borderBottom: "1px solid black",
+		margin: "0 30px 0 30px",
 	},
 	basicSetting: {
 		display: "grid",
@@ -45,12 +47,27 @@ const useStyles = makeStyles((theme) => ({
 	},
 	submit: {
 		width: 100,
+		margin: 20,
+	},
+	row: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	bold: {
+		fontWeight: "bold",
+		padding: "20px 0 20px 0",
+		fontSize: 30,
+	},
+	input: {
+		padding: 10,
+		borderBottom: "1px solid #BEBEBE",
 	},
 }));
 function ChallengeSettings() {
 	const classes = useStyles();
 	const { challengeId } = useParams();
-	const [nextDay, setNextDay] = useState("");
+	const [startDate, setStartDate] = useState("2022-12-12");
+	const [endDate, setEndDate] = useState("2022-12-12");
 
 	const [challengeBasics, setChallengeBasics] = useState({
 		challengeId: null,
@@ -69,8 +86,15 @@ function ChallengeSettings() {
 		descriptionTitle: null,
 		recommandation: null,
 	});
-
-	const [showOnScreen, setShowOnScreen] = useState("off");
+	const weekDays = {
+		1: "월",
+		2: "화",
+		3: "수",
+		4: "목",
+		5: "금",
+		6: "토",
+		7: "일",
+	};
 	const now = new Date();
 	const [accessCode, setAccessCode] = useState({
 		challengeId: challengeId,
@@ -98,13 +122,12 @@ function ChallengeSettings() {
 				: "0" + String(now.getDate())),
 		name: null,
 	});
-	const [selectedDate, handleDateChange] = useState(new Date());
 
-	const [startOn, setStartOn] = useState("");
-	const { loading, error, data, refetch } = useQuery(ONE_CHALLENGES, {
+	const { loading, error, data } = useQuery(ONE_CHALLENGES, {
 		variables: {
 			challengeId: challengeId,
 		},
+
 		onCompleted(data) {
 			if (data.challenges.edges) {
 				setChallengeBasics({
@@ -173,7 +196,6 @@ function ChallengeSettings() {
 						: null,
 				},
 			});
-			// window.location.reload(true);
 		}
 	}
 
@@ -224,16 +246,17 @@ function ChallengeSettings() {
 					});
 				}
 			}
-			// window.location.reload(true);
 		}
 	}
 
 	function submitAccessCode() {
 		if (accessCode.codeNumber) {
+			accessCode.startDate = startDate;
+			accessCode.endDate = endDate;
+
 			createAccessCode({
 				variables: accessCode,
 			});
-			// window.location.reload(true);
 		}
 	}
 
@@ -248,9 +271,9 @@ function ChallengeSettings() {
 		<div className="wrapper" style={{ marginLeft: 20, marginTop: 20 }}>
 			{data.challenges && data.challenges.edges && (
 				<div className={classes.container}>
-					<div className={classes.challenge}>기본설정</div>
+					<div className={classes.bold}>기본설정</div>
 					<div className={classes.basicSetting}>
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								썸네일
 							</div>
@@ -263,7 +286,7 @@ function ChallengeSettings() {
 							</div>
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								챌린지 리스트 썸네일
 							</div>
@@ -275,7 +298,8 @@ function ChallengeSettings() {
 								/>
 							</div>
 						</div>
-						<div className={classes.challengeName}>
+
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								챌린지명
 							</div>
@@ -291,7 +315,6 @@ function ChallengeSettings() {
 										data.challenges.edges[0].node.name
 									}
 									className={classes.textInputs}
-									// onBlur={handleOnBlur}
 									InputProps={{
 										style: {
 											fontSize: 12,
@@ -309,7 +332,7 @@ function ChallengeSettings() {
 							</div>
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								썸네일 설명
 							</div>
@@ -318,6 +341,7 @@ function ChallengeSettings() {
 									variant="outlined"
 									id="standard-multiline-flexible"
 									multiline
+									placeholder="separate list with comma(,) 예 태그1, 태그2"
 									type="text"
 									name="text"
 									size="small"
@@ -325,7 +349,6 @@ function ChallengeSettings() {
 										data.challenges.edges[0].node.tags
 									}
 									className={classes.textInputs}
-									// onBlur={handleOnBlur}
 									InputProps={{
 										style: {
 											fontSize: 12,
@@ -343,7 +366,7 @@ function ChallengeSettings() {
 							</div>
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								<div
 									style={{
@@ -355,107 +378,49 @@ function ChallengeSettings() {
 										show on screen{" "}
 									</div>
 
-									<div
-										style={{
-											width: 20,
-											height: 20,
-											background: "blue",
-											color: "white",
-											marginRight: 20,
-											cursor: "pointer",
-
-											padding: 3,
-										}}
-										onClick={(e) =>
-											setChallengeBasics({
-												...challengeBasics,
-												showOnScreen: true,
-											})
-										}
-									>
-										yes
+									<div>
+										<select
+											onChange={(e) =>
+												setChallengeBasics({
+													...challengeBasics,
+													showOnScreen: +e.target
+														.value,
+												})
+											}
+										>
+											<option
+												value={
+													data.challenges.edges[0]
+														.node.showOnScreen
+														? 1
+														: 0
+												}
+											>
+												{String(
+													data.challenges.edges[0]
+														.node.showOnScreen
+												)}
+											</option>
+											<option
+												value={
+													!data.challenges.edges[0]
+														.node.showOnScreen
+														? 1
+														: 0
+												}
+											>
+												{String(
+													!data.challenges.edges[0]
+														.node.showOnScreen
+												)}
+											</option>
+										</select>
 									</div>
-									<div
-										style={{
-											width: 20,
-											height: 20,
-											background: "blue",
-											color: "white",
-											cursor: "pointer",
-
-											padding: 3,
-										}}
-										onClick={(e) =>
-											setChallengeBasics({
-												...challengeBasics,
-												showOnScreen: false,
-											})
-										}
-									>
-										No
-									</div>
-									{console.log(challengeBasics.showOnScreen)}
 								</div>
-								{/* <input
-									type="checkbox"
-									defaultChecked={
-										challengeBasics.showOnScreen
-									}
-									// onChange={(e) => {
-									// 	setShowOnScreen(
-									// 		!challengeBasics.showOnScreen
-									// 	);
-									// }}
-
-									onChange={(e) =>
-										setChallengeBasics({
-											...challengeBasics,
-											showOnScreen: !challengeBasics.showOnScreen,
-										})
-									}
-								/> */}
 							</div>
-
-							{/* <div>
-								
-								<select
-									// onChange={(e) =>
-									// 	setChallengeBasics({
-									// 		...challengeBasics,
-									// 		showOnScreen:
-									// 			e.target.value === 1
-									// 				? true
-									// 				: e.target.value === 0
-									// 				? false
-									// 				: challengeBasics.showOnScreen,
-									// 	})
-									// }
-
-									onChange={(e) =>
-										setShowOnScreen(
-											e.target.value === 1
-												? true
-												: e.target.value === 0
-												? false
-												: "not selected"
-										)
-									}
-								>
-									<option
-										value={
-											data.challenges.edges[0].node
-												.showOnScreen
-										}
-									>
-										선택하세요
-									</option>
-									<option value={0}>false</option>
-									<option value={1}>true</option>
-								</select> 
-							</div> */}
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								start on
 							</div>
@@ -474,7 +439,12 @@ function ChallengeSettings() {
 												.startOn
 										}
 									>
-										선택하세요
+										{data.challenges.edges[0].node.startOn
+											? weekDays[
+													data.challenges.edges[0]
+														.node.startOn
+											  ]
+											: "선택하세요"}
 									</option>
 									<option value="1">월</option>
 									<option value="2">화</option>
@@ -487,7 +457,7 @@ function ChallengeSettings() {
 							</div>
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								<div
 									style={{
@@ -499,90 +469,48 @@ function ChallengeSettings() {
 										start tomorrow
 									</div>
 
-									<div
-										style={{
-											width: 20,
-											height: 20,
-											background: "blue",
-											color: "white",
-											cursor: "pointer",
-											marginRight: 20,
-											padding: 3,
-										}}
-										onClick={(e) =>
-											setChallengeBasics({
-												...challengeBasics,
-												nextDay: true,
-											})
-										}
-									>
-										yes
-									</div>
-									<div
-										style={{
-											width: 20,
-											height: 20,
-											background: "blue",
-											color: "white",
-											cursor: "pointer",
-
-											padding: 3,
-										}}
-										onClick={(e) =>
-											setChallengeBasics({
-												...challengeBasics,
-												nextDay: false,
-											})
-										}
-									>
-										No
+									<div>
+										<select
+											onChange={(e) =>
+												setChallengeBasics({
+													...challengeBasics,
+													nextDay: +e.target.value,
+												})
+											}
+										>
+											<option
+												value={
+													data.challenges.edges[0]
+														.node.nextDay
+														? 1
+														: 0
+												}
+											>
+												{String(
+													data.challenges.edges[0]
+														.node.nextDay
+												)}
+											</option>
+											<option
+												value={
+													!data.challenges.edges[0]
+														.node.nextDay
+														? 1
+														: 0
+												}
+											>
+												{String(
+													!data.challenges.edges[0]
+														.node.nextDay
+												)}
+											</option>
+										</select>
 									</div>
 								</div>
 							</div>
-							{/* <div>
-								<select
-									onChange={(e) =>
-										setChallengeBasics({
-											...challengeBasics,
-											nextDay: e.target.value,
-										})
-									}
-								>
-									<option
-										value={
-											data.challenges.edges[0].node
-												.nextDay
-										}
-									>
-										선택하세요
-									</option>
-									<option
-										value={
-											data.challenges.edges[0].node
-												.nextDay
-										}
-									>
-										{String(
-											data.challenges.edges[0].node
-												.nextDay
-										)}
-									</option>
-									<option
-										value={
-											!data.challenges.edges[0].node
-												.nextDay
-										}
-									>
-										{String(
-											!data.challenges.edges[0].node
-												.nextDay
-										)}
-									</option>
-								</select>
-							</div> */}
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								schedule days
 							</div>
@@ -631,9 +559,9 @@ function ChallengeSettings() {
 			)}
 
 			<div className={classes.container}>
-				<div>코드번호</div>
-				<div>
-					<div>
+				<div className={classes.bold}>코드번호</div>
+				<div style={{ width: 200 }}>
+					{/* <div>
 						<TextField
 							variant="standard"
 							id="standard-multiline-flexible"
@@ -642,11 +570,7 @@ function ChallengeSettings() {
 							name="text"
 							size="small"
 							label="코드번호"
-							// defaultValue={
-							// 	chats.node.botChat
-							// }
 							className={classes.textInputs}
-							// onBlur={handleOnBlur}
 							InputProps={{
 								style: {
 									fontSize: 12,
@@ -661,37 +585,99 @@ function ChallengeSettings() {
 								})
 							}
 						/>
-					</div>
-					{/* <div>
-						<TextField
-							variant="standard"
-							id="standard-multiline-flexible"
-							multiline
-							type="text"
-							name="text"
-							size="small"
-							label="시작날짜"
-							// defaultValue={
-							// 	chats.node.botChat
-							// }
-							className={classes.textInputs}
-							// onBlur={handleOnBlur}
-							InputProps={{
-								style: {
-									fontSize: 12,
-									fontFamily: "NanumSquare",
-									width: 150,
-								},
-							}}
-							onChange={(e) =>
-								setAccessCode({
-									...accessCode,
-									startDate: e.target.value,
-								})
-							}
-						/>
 					</div> */}
 					<div>
+						<div
+							className={classes.row}
+							style={{
+								margin: 10,
+							}}
+						>
+							<span style={{ margin: "0 20px 0 0" }}>
+								코드번호
+							</span>
+							<input
+								className={classes.input}
+								type="text"
+								value={accessCode.codeNumber}
+								onChange={(e) =>
+									setAccessCode({
+										...accessCode,
+										codeNumber: e.target.value,
+									})
+								}
+								placeholder="...."
+							/>
+						</div>
+						<div
+							className={classes.row}
+							style={{
+								width: 300,
+								margin: "10px 0 10px 0",
+							}}
+						>
+							<span style={{ margin: "0 20px 0 0" }}>
+								시작날짜
+							</span>
+							<DateBox date={startDate} setDate={setStartDate} />
+						</div>
+
+						<div
+							className={classes.row}
+							style={{
+								width: 300,
+								margin: 10,
+							}}
+						>
+							<span style={{ margin: "0 20px 0 0" }}>
+								마감날짜
+							</span>
+							<DateBox date={endDate} setDate={setEndDate} />
+						</div>
+
+						<div
+							className={classes.row}
+							style={{
+								margin: 10,
+							}}
+						>
+							<span style={{ margin: "0 20px 0 0" }}>인원수</span>
+							<input
+								className={classes.input}
+								type="number"
+								value={accessCode.maxUsers}
+								onChange={(e) =>
+									setAccessCode({
+										...accessCode,
+										maxUsers: e.target.value,
+									})
+								}
+								placeholder="...."
+							/>
+						</div>
+						<div
+							className={classes.row}
+							style={{
+								margin: 10,
+							}}
+						>
+							<span style={{ margin: "0 20px 0 0" }}>사용처</span>
+							<input
+								className={classes.input}
+								type="text"
+								value={accessCode.name}
+								onChange={(e) =>
+									setAccessCode({
+										...accessCode,
+										name: e.target.value,
+									})
+								}
+								placeholder="...."
+							/>
+						</div>
+					</div>
+
+					{/* <div>
 						<MuiPickersUtilsProvider utils={DateFnsUtils}>
 							<div>
 								<KeyboardDatePicker
@@ -765,51 +751,18 @@ function ChallengeSettings() {
 								</MuiPickersUtilsProvider>
 							</div>
 						</MuiPickersUtilsProvider>
-						{/* <TextField
-							variant="standard"
-							id="standard-multiline-flexible"
-							multiline
-							type="text"
-							name="text"
-							size="small"
-							label="마감날짜"
-							// defaultValue={
-							// 	chats.node.botChat
-							// }
-							className={classes.textInputs}
-							// onBlur={handleOnBlur}
-							InputProps={{
-								style: {
-									fontSize: 12,
-									fontFamily: "NanumSquare",
-									width: 150,
-								},
-							}}
-							onChange={(e) =>
-								setAccessCode({
-									...accessCode,
-									endDate: e.target.value,
-								})
-							}
-						/> */}
 					</div>
 					<div>
 						<TextField
 							variant="standard"
 							id="standard-multiline-flexible"
-							// multiline
 							type="number"
-							// name="number"
 							size="small"
 							label="인원수"
-							// defaultValue={
-							// 	chats.node.botChat
-							// }
 							className={classes.textInputs}
 							InputLabelProps={{
 								shrink: true,
 							}}
-							// onBlur={handleOnBlur}
 							InputProps={{
 								style: {
 									fontSize: 12,
@@ -834,11 +787,7 @@ function ChallengeSettings() {
 							name="text"
 							size="small"
 							label="사용처"
-							// defaultValue={
-							// 	chats.node.botChat
-							// }
 							className={classes.textInputs}
-							// onBlur={handleOnBlur}
 							InputProps={{
 								style: {
 									fontSize: 12,
@@ -853,7 +802,7 @@ function ChallengeSettings() {
 								})
 							}
 						/>
-					</div>
+					</div> */}
 					<div className={classes.submit}>
 						<Button
 							variant="contained"
@@ -869,9 +818,9 @@ function ChallengeSettings() {
 			</div>
 			{data.challenges && data.challenges.edges && (
 				<div className={classes.container}>
-					<div>상세페이지</div>
+					<div className={classes.bold}>상세페이지</div>
 					<div className={classes.basicSetting}>
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								부제목
 							</div>
@@ -906,7 +855,7 @@ function ChallengeSettings() {
 							</div>
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								설명
 							</div>
@@ -923,7 +872,6 @@ function ChallengeSettings() {
 											.description
 									}
 									className={classes.textInputs}
-									// onBlur={handleOnBlur}
 									InputProps={{
 										style: {
 											fontSize: 12,
@@ -941,7 +889,7 @@ function ChallengeSettings() {
 							</div>
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								기간
 							</div>
@@ -957,7 +905,6 @@ function ChallengeSettings() {
 										data.challenges.edges[0].node.period
 									}
 									className={classes.textInputs}
-									// onBlur={handleOnBlur}
 									InputProps={{
 										style: {
 											fontSize: 12,
@@ -975,7 +922,7 @@ function ChallengeSettings() {
 							</div>
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								추천대상
 							</div>
@@ -987,6 +934,7 @@ function ChallengeSettings() {
 									type="text"
 									name="text"
 									size="small"
+									placeholder="separede list with comma(,) 예: 추천1, 추천2"
 									defaultValue={
 										data.challenges.edges[0].node
 											.ChallengeListslists.edges.length >
@@ -995,7 +943,6 @@ function ChallengeSettings() {
 											: ""
 									}
 									className={classes.textInputs}
-									// onBlur={handleOnBlur}
 									InputProps={{
 										style: {
 											fontSize: 12,
@@ -1012,7 +959,7 @@ function ChallengeSettings() {
 								/>
 							</div>
 						</div>
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								성공
 							</div>
@@ -1028,7 +975,6 @@ function ChallengeSettings() {
 										data.challenges.edges[0].node.price * 20
 									}
 									className={classes.textInputs}
-									// onBlur={handleOnBlur}
 									InputProps={{
 										style: {
 											fontSize: 12,
@@ -1036,18 +982,11 @@ function ChallengeSettings() {
 											width: 205,
 										},
 									}}
-									// onChange={(e) => {
-									// 	handleEditsChange(
-									// 		e,
-									// 		chats.node.botChatId,
-									// 		chats.node.botChat
-									// 	);
-									// }}
 								/>
 							</div>
 						</div>
 
-						<div className={classes.challengeName}>
+						<div className={classes.row}>
 							<div className={classes.challengeNameTitle}>
 								이용금액
 							</div>
