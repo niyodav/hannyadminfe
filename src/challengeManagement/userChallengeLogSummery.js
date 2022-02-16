@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 		},
 	},
 }));
-function UserChallengeLogSummery({ userId, status }) {
+function UserChallengeLogSummery({ userId = null, status = null }) {
 	const classes = useStyles();
 	const [search, setSearch] = useState({
 		by: "email",
@@ -158,11 +158,14 @@ function UserChallengeLogSummery({ userId, status }) {
 	};
 	const { loading, error, data } = useQuery(USER_SCENERIO_LOG_SUMMERY, {
 		variables: {
+			userId: userId && status ? userId : null,
+			status: userId && status ? status : null,
+
 			challengeId: challengeId,
 			email: search.by === "email" ? search.content : null,
 			accesscode: search.by === "accesscode" ? search.content : null,
-			startDateLte: !search.content ? datePicker.to : null,
-			startDateGte: !search.content ? datePicker.from : null,
+			startDateLte: !status && !search.content ? datePicker.to : null,
+			startDateGte: !status && !search.content ? datePicker.from : null,
 			lastIndex: page && lastIndex ? lastIndex : null,
 			page: page && lastIndex ? page : null,
 		},
@@ -209,21 +212,17 @@ function UserChallengeLogSummery({ userId, status }) {
 					<th className={classes.tableColumn}>메시지 받는시간</th>
 					<th className={classes.tableColumn}>획득한 포인트</th>
 					<th className={classes.tableColumn}>상태</th>
+
 					{data.data.length > 0 &&
 						!userId &&
 						!status &&
-						JSON.parse(data.data[1]).scenerios.map((th) => (
+						JSON.parse(data.data).data[0].scenerios.map((th) => (
 							<th className={classes.tableColumn}>{th}</th>
 						))}
 				</thead>
 				<tbody>
-					{data.data.length > 0 &&
-						data.data.map((row, index) => {
-							let obj = JSON.parse(row);
-							if (obj.hasOwnProperty("dataCount")) {
-								return null;
-							}
-
+					{JSON.parse(data.data).data.length > 0 &&
+						JSON.parse(data.data).data.map((obj, index) => {
 							return (
 								<tr key={obj.challengeId} id={obj.challengeId}>
 									<td className={classes.tableColumn}>
@@ -286,43 +285,42 @@ function UserChallengeLogSummery({ userId, status }) {
 									</td>
 									{!userId &&
 										!status &&
-										JSON.parse(data.data[1]).scenerios.map(
-											(td) => (
-												<td
-													className={
-														classes.tableColumn
-													}
+										JSON.parse(
+											data.data
+										).data[0].scenerios.map((td) => (
+											<td className={classes.tableColumn}>
+												<div
+													style={{
+														flexDirection: "column",
+													}}
 												>
-													<div
-														style={{
-															flexDirection:
-																"column",
-														}}
-													>
-														<div>
-															{JSON.parse(
-																data.data[index]
-															).scenerioLogs.filter(
-																(item) =>
-																	item === td
-															).length > 0
-																? "O"
-																: "X"}
-														</div>
-														<div>
-															{JSON.parse(
-																data.data[index]
-															).completedLogs.filter(
-																(item) =>
-																	item === td
-															).length > 0
-																? "O"
-																: "X"}
-														</div>
+													<div>
+														{JSON.parse(
+															data.data
+														).data[
+															index
+														].scenerioLogs.filter(
+															(item) =>
+																item === td
+														).length > 0
+															? "O"
+															: "X"}
 													</div>
-												</td>
-											)
-										)}
+													<div>
+														{JSON.parse(
+															data.data
+														).data[
+															index
+														].completedLogs.filter(
+															(item) =>
+																item === td
+														).length > 0
+															? "O"
+															: "X"}
+													</div>
+												</div>
+											</td>
+										))}
 								</tr>
 							);
 						})}
@@ -513,17 +511,22 @@ function UserChallengeLogSummery({ userId, status }) {
 					</h4>
 				</div>
 			)}
-
-			<Table data={data.userScenerioLogSummery} />
-			<div
-				style={{
-					flexDirection: "column",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
-				<Pagination checkState={checkPage} />
-			</div>
+			{data && data.userScenerioLogSummery.length > 0 ? (
+				<div>
+					<Table data={data.userScenerioLogSummery} />
+					<div
+						style={{
+							flexDirection: "column",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
+					>
+						<Pagination checkState={checkPage} />
+					</div>
+				</div>
+			) : (
+				<div>데이터 없음</div>
+			)}
 		</div>
 	);
 }

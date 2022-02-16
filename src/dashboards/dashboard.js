@@ -72,9 +72,9 @@ function Dashboard() {
 			<div style={{ marginLeft: 20, marginTop: 20 }}>
 				<h4>
 					총 합계:{" "}
-					{JSON.parse(data.dailyDeviceInfo[0]).androidTotal +
+					{/* {JSON.parse(data.dailyDeviceInfo[0]).androidTotal +
 						JSON.parse(data.dailyDeviceInfo[0]).otherTotal +
-						JSON.parse(data.dailyDeviceInfo[0]).iosTotal}{" "}
+						JSON.parse(data.dailyDeviceInfo[0]).iosTotal}{" "} */}
 					{JSON.parse(data.dailyDeviceInfo[0]).total}
 				</h4>
 				<div>

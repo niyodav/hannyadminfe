@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 		fontFamily: "NanumSquare",
 	},
 	infoContainer: {
-		display: "flex",
+		flexDirection: "row",
 	},
 	info: {
 		marginLeft: 20,
