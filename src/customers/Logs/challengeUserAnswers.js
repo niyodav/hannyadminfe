@@ -192,31 +192,7 @@ function ChallengeUserAnswers({ userId, status }) {
 							);
 						})}
 
-					{/* {JSON.parse(data.data[0]).logs.length > 0 &&
-						JSON.parse(data.data[0]).logs.map((row, index) => {
-							return (
-								<tr key={row.logId} id={row.logId}>
-									<td className={classes.tableColumn}>
-										{row.createdAt
-											? row.createdAt.slice(0, 16)
-											: "~"}
-									</td>
-
-									{JSON.parse(data.data[0]).etags.map(
-										(td) => (
-											<td className={classes.tableColumn}>
-												{JSON.parse(data.data[0]).logs[
-													index
-												].etag === td
-													? JSON.parse(data.data[0])
-															.logs[index].value
-													: "~"}
-											</td>
-										)
-									)}
-								</tr>
-							);
-						})} */}
+				
 				</tbody>
 			</table>
 		</div>

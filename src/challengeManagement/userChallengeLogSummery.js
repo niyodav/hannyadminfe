@@ -253,8 +253,8 @@ function UserChallengeLogSummery({ userId = null, status = null }) {
 										) + " %"}
 									</td>
 									<td className={classes.tableColumn}>
-										{obj.createdAt
-											? obj.createdAt.slice(0, 16)
+										{obj.created_at
+											? obj.created_at.slice(0, 16)
 											: "~"}
 									</td>
 									<td className={classes.tableColumn}>

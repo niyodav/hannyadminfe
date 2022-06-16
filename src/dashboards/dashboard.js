@@ -41,10 +41,9 @@ function Dashboard() {
 			<tbody>
 				{data.data.dailyDevices.map((row) => {
 					return (
-						<tr key={row.createdAt} id={row.createdAt}>
+						<tr key={row.created_at} id={row.created_at}>
 							<td className={classes.tableColumn}>
-								{row.createdAt}
-								{console.log(row)}
+								{row.created_at}
 							</td>
 							<td className={classes.tableColumn}>
 								{row.androidCount}
